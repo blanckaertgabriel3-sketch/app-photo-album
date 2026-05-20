@@ -1,0 +1,18 @@
+services:
+  db:
+    container_name: album_db
+    env_file:
+      - .env
+    image: mysql
+    restart: always
+    ports:
+      - 3306:3306
+    volumes: 
+      - ./seed:/docker-entrypoint-initdb.d
+  phpmyadmin:
+    image: phpmyadmin
+    restart: always
+    ports:
+      - 8080:80
+    env_file:
+      - .env
