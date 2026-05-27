@@ -1,6 +1,8 @@
 <?php
 
 header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
+header("Access-Control-Allow-Headers: Content-Type, Authorization");
 header("Content-Type: application/json");
 
 require "../../config/database.php";
@@ -12,22 +14,26 @@ $method = $_SERVER['REQUEST_METHOD'];
 
 switch ($method) {
 	case 'GET':
-		if(isset($_GET['id'])) {
-			getUser($_GET['id'], $conn);
-		} else {
+		if($_GET['action'] === 'login') {
+			login($conn);
+		}else {
 			getUsers($conn);
 		}
 		break;
 	case 'POST':
-		createUser($conn);
+		if($_GET['action'] === 'register') {
+			register($conn);
+		}
+		elseif($_GET['action'] === 'login') {
+			login($conn);
+		}
 		break;
 	case 'PUT':
 		updateUser($conn);
 		break;
 	case 'DELETE':
 		deleteUser($conn);
-		break;
-	
+		break;	
 	default:
 		echo json_encode(["message"=>"Invalid request"]);
 		break;
@@ -39,27 +45,66 @@ function getUsers($conn) {
 	$users = $stmt->fetchAll(PDO::FETCH_ASSOC);
 	echo json_encode([$users]);
 }
-function getUser($id, $conn) {
-		$query = "SELECT * FROM users WHERE id=:id";
-		$stmt = $conn->prepare($query);
-		$stmt->bindParam(':id',$id);
-		$stmt->execute();
-		$user = $stmt->fetch(PDO::FETCH_ASSOC);
-		echo json_encode([$user?: ["message"=>"User not found"]]);
+function login($conn) {
+	$data = json_decode(file_get_contents("php://input"), true);
+	$name = $data["name"];
+	$password = $data["password"];
+	$query = "SELECT * FROM users WHERE name=:name";
+	$stmt = $conn->prepare($query);
+	$stmt->bindParam(':name', $name);
+	$stmt->execute();
+	$user = $stmt->fetchAll(PDO::FETCH_ASSOC);
+	if($user && password_verify($password, $user["password"])) {
+		echo json_encode([
+			"success" => true,
+			"user" => $user,
+			"message" => "You are connected"
+		]);
+	}else {
+		echo json_encode([
+			"success" => false,
+			"message" => "Incorrect name or password"
+		]);
+	}
 }
 function createUser($conn) {
 		$data = json_decode(file_get_contents("php://input"),true);
-		if(isset($data['name']) && isset($data['password'])) {
+		$name = $data["name"];
+		$password = $data["password"];
+		$hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+		if(isset($name) && isset($password)) {
 			$query = "INSERT INTO users (name, password) VALUES (:name,:password)";
 			$stmt = $conn->prepare($query);
-			$stmt->bindParam(':name',$data['name']);
-			$stmt->bindParam('password',$data['password']);
+			$stmt->bindParam(':name',$name);
+			$stmt->bindParam(':password',$hashedPassword);
 			$stmt->execute();
-			echo json_encode(["message"=>"User added"]);
+			echo json_encode([
+				"success" => true,
+				"message" => "User added"
+				]);
 		}else {
-			echo json_encode(["message"=>"Invalid data for creating user"]);
+			echo json_encode([
+				"success" => false,
+				"message" => "Invalid data for creating user"
+				]);
 		}
 
+}
+function register($conn) {
+	$data = json_decode(file_get_contents("php://input"), true);
+	$name = $data["name"];
+	$query = "SELECT * FROM users WHERE name=:name";
+	$stmt = $conn->prepare($query);
+	$stmt->bindParam(':name', $name);
+	$stmt->execute();
+	$user = $stmt->fetchAll(PDO::FETCH_ASSOC);
+	if($user) {
+		echo json_encode([
+			"message" => "User already exist"
+		]);
+		return;
+	}
+	createUser($conn);
 }
 function updateUser($conn) {
 		$data = json_decode(file_get_contents("php://input"),true);
