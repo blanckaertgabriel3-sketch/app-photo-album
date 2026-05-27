@@ -53,7 +53,7 @@ function login($conn) {
 	$stmt = $conn->prepare($query);
 	$stmt->bindParam(':name', $name);
 	$stmt->execute();
-	$user = $stmt->fetchAll(PDO::FETCH_ASSOC);
+	$user = $stmt->fetch(PDO::FETCH_ASSOC);
 	if($user && password_verify($password, $user["password"])) {
 		echo json_encode([
 			"success" => true,
