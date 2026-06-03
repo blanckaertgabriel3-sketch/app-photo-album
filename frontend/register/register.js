@@ -2,7 +2,7 @@ const go_connection = document.getElementById("go_connection");
 const register_form_name = document.getElementById("register_form_name");
 const register_form_password = document.getElementById("register_form_password");
 const register_form_validate_btn = document.getElementById("register_form_validate_btn");
-const register_form_error_box = document.getElementById("register_form_error_box");
+const msg_box = document.getElementById("msg_box");
 
 
 go_connection.addEventListener("click", () => {
@@ -25,16 +25,15 @@ async function register() {
 			})
 		});
 		if(!response.ok) {
-			register_form_error_box.textContent = "HTTP error";
+			msg_box.textContent = "Erreur HTTP";
 			return;
 		}
 		const data = await response.json();
-		console.log("data : ", JSON.stringify(data));
-		register_form_error_box.textContent = data.message;
+		msg_box.textContent = data.message;
 	}
 	catch (error) {
 		console.error(error);
-		register_form_error_box.textContent = "Server error";
+		msg_box.textContent = "Erreur Serveur";
 	}
 }
 

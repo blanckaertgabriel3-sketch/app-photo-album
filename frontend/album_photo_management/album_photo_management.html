@@ -3,15 +3,17 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Accueil</title>
+	<title>Album / Photo Management</title>
 	<!-- fontawesome -->
 	 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-	<link rel="stylesheet" href="home.css">
+
+	<link rel="stylesheet" href="album_photo_management.css">
 	<link rel="stylesheet" href="../common.css">
 </head>
 <body>
+
 	<header>
-		<h1>Accueil</h1>
+		<h1>Gestion photo / album</h1>
 		<ul id="menu">
 			<li><a href="../home/home.html"><i class="fa-solid fa-house"></i></a></li>
 			<li><a href="../album_photo_management/album_photo_management.html"><i class="fa-solid fa-circle-plus"></i></a></li>
@@ -21,11 +23,32 @@
 		</ul>
 	</header>
 	<main>
-		<h3>Bonjour <span id="username_span"></span></h3>
+
+		<div id="album_photo_management">
+
+			<div id="album_management">
+				<h3>Album Management</h3>
+
+				<button id="create_album">Create</button>
+				<button id="edit_album">Edit</button>
+				<button id="delete_album">Delete</button>
+			</div>
+
+			<div id="photo_management">
+				<h3>Photo Management</h3>
+
+				<button id="create_photo">Create</button>
+				<button id="edit_photo">Edit</button>
+				<button id="delete_photo">Delete</button>
+			</div>
+
+		</div>
+
 		<div id="msg_box"></div>
 	</main>
 
 	<script src="../logout.js"></script>
-	<script src="home.js"></script>
+	<script src="album_photo_management.js"></script>
+
 </body>
 </html>

@@ -1,7 +1,7 @@
 const form_validate_btn = document.getElementById("form_validate_btn");
 const form_name = document.getElementById("form_name");
 const form_password = document.getElementById("form_password");
-const form_error_box = document.getElementById("form_error_box");
+const msg_box = document.getElementById("msg_box");
 const go_register = document.getElementById("go_register");
 
 localStorage.clear();
@@ -17,6 +17,7 @@ async function login() {
 	try {
 		const response = await fetch (`http://localhost:8000/rest/api/v1/users.php?action=login`, {
 			method: "POST",
+  			credentials: "include",
 			headers: {
 			"Content-Type": "application/json"
 			},
@@ -26,22 +27,19 @@ async function login() {
 			})
 		});
 		if(!response.ok) {
-			form_error_box.textContent = "HTTP error";
+			msg_box.textContent = "Erreur HTTP";
 			return;
 		}
 		const data = await response.json();
-		console.log("data : ", JSON.stringify(data));
-		console.log("Data success : ", JSON.stringify(data.success))
 		if(data.success) {
-			console.log("Redirection");
-			// document.location.href="../home/home.html";
-		}else {
-			console.log("No redirection");
+			document.location.href="../home/home.html";
 		}
-		form_error_box.textContent = data.message;
+		else {
+			msg_box.textContent = data.message;
+		}
 	}
 	catch (error) {
+		msg_box.textContent = "Erreur Serveur";
 		console.error(error);
-		form_error_box.textContent = "Server error";
 	}
 }

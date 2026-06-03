@@ -1,0 +1,16 @@
+agenda 
+--------------------------------------------
+
+
+
+à faire
+--------------------------------------------
+-upload 
+	- Les utilisateurs ne peuvent pas créer plusieur photos(chemin de l'img, titre, description) avec la même photo(image).
+	- Les images uploadé ne font pas les mêmes dimensions.
+
+- Gestion erreur lors de la deconnexion; <logout.js> : Si la page hmtl ne contient pas de div avec "id = msg_box". Il y a une erreur.
+
+- Interdire 2 titre idendique dans album et photo.
+
+- Imposer une limite de résultat lors de la recherche de photo. Répercussion fluidité du défilement de la page, dû aux images.

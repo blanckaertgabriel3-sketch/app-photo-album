@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Gestion d'album</title>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+	<link rel="stylesheet" href="album_management.css">
+	<link rel="stylesheet" href="../common.css">
+</head>
+<body>
+	<header>
+		<h1>Gestion album</h1>
+		<ul id="menu">
+			<li><a href="../home/home.html"><i class="fa-solid fa-house"></i></a></li>
+			<li><a href="../album_photo_management/album_photo_management.html"><i class="fa-solid fa-circle-plus"></i></a></li>
+			<li><a href="#"><i class="fa-solid fa-user"></i></a></li>
+			<li><a href="#"><i class="fa-solid fa-user-group"></i></a></li>
+			<li><a href="#" id="logout_btn" ><i class="fa-solid fa-right-from-bracket"></i></a></li>
+		</ul>
+	</header>
+	<main>
+		<div id="info_album">
+			<label for="title_input">Titre de l'album <input id="title_input" type="text"></label>
+		</div>
+		<input type="search" id="search_photo" placeholder="Recherche photo">
+		<div id="photo_management">
+		</div>
+		<button id="create_btn" type="submit">Créer la photo</button>
+		<div id="msg_box"></div>
+	</main>
+	
+	<script src="../logout.js"></script>
+	<script src="album_management.js"></script>
+</body>
+</html>

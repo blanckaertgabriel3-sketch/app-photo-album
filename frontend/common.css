@@ -1,6 +1,26 @@
+:root {
+	--white_0: rgb(198, 198, 198);
+	--white_1: rgb(169, 169, 169);
+	--white_2: rgb(158, 168, 167);
+
+	--black_0: rgb(29, 29, 29);
+}
 * {
 	margin: 0;
 	padding: 0;
-	background-color: rgb(0, 0, 0);
-	color: gray;
+	background-color: var(--white_0);
+	color: var(--black_0);
+
+	font-family: "Roboto", sans-serif;
+}
+
+#info_photo {
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
+}
+
+.result_image {
+	max-width: 300px;
+	max-height: 300px;
 }
