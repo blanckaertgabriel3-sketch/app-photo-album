@@ -8,7 +8,7 @@ je 4 juin :
 	- Les utilisateurs peuvent maintenant utiliser plusieurs fois la même photo pour leur gestion de photo.
 - Pb résolu : je remontais trop loin dans les dossiers alors le dossier uploads n'étais pas trouvé, pour la fonction : move_uploaded_file() .J'avais un échec constant d'uploads, targetPath étais toujours undefined. 
 - Résolution Pb. Table photos bdd : changement targetPath, qui était invalide à mettre dans une balise img. Le targetPath est à présent insérable dans une balise img.
-- Gestion erreur : Lors de la déconnexion : Si la page hmtl ne contient pas de div avec "id = msg_box". Il y avait une erreur. J'ai mis en place une vérification de présence de cette balise. Si elle est présente alors les messages d'erreurs de déconnexion peuvent étre afficher dans cette balise.
+- Gestion erreur : Lors de la déconnexion : Si la page hmtl ne contient pas de div avec id = msg_box. Il y avait une erreur. J'ai mis en place une vérification de présence de cette balise. Si elle est présente alors les messages d'erreurs de déconnexion peuvent étre afficher dans cette balise.
 - Implémentation architecture mvc pour la gestion album.
 - Gestion album : Récupérer la taille du tableau qui retourne les resultats d'images. Afficher en fonction de la taille du tableau des balises img dans la page html.
 - Affichage de la 1er photo retournée par la route de recherche_photo. En fonction de l'entrée utilisateur dans la barre de recherche.
