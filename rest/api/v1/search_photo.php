@@ -8,7 +8,9 @@ $method = $_SERVER["REQUEST_METHOD"];
 
 switch ($method) {
 	case 'POST':
-		search_photo($conn);
+		if($_GET["action"] === "search_photo") {
+			search_photo($conn);
+		}
 		break;
 	
 	default:
@@ -35,6 +37,13 @@ function search_photo($conn) {
 		]);
 		exit;
 	}
+	if($letters === "") {
+		echo json_encode([
+			"success" => false,
+			"message" => "Veuillez entrer une lettre"
+		]);
+		exit;
+	}
 	$query = "SELECT * FROM photos WHERE title LIKE :search";
 	$search = "%" . $letters . "%";
 	$stmt = $conn->prepare($query);
@@ -58,6 +67,6 @@ function search_photo($conn) {
 	echo json_encode([
 		"success" => true,
 		"message" => "Photo trouvée",
-		"PHOTOS" => $photos
+		"photos_result" => $photos
 	], JSON_PRETTY_PRINT);
 }

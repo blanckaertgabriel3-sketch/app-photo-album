@@ -42,7 +42,9 @@ create_btn.addEventListener("click", async () => {
         }
         const upload_result = await upload_response.json();
         msg_box.textContent = upload_result.message;
-        
+        if(!upload_result.success) {
+            return;
+        }
         const create_response = await fetch("http://localhost:8000/rest/api/v1/create_photo.php", {
             method: "POST",
             body: JSON.stringify({

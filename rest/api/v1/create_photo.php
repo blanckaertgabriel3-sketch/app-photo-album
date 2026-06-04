@@ -37,22 +37,35 @@ function create_photo($conn) {
 		]);
 		exit;
 	}
-	if (!isset($data["file_directory"])) {
+	$user_id = $_SESSION["user_id"];
+	$title = $data["title"];
+	$description = $data["description"];
+	$file_directory = $data["file_directory"];	
+	if (!isset($file_directory)) {
     	echo json_encode([
 			"success" => false, 
 			"message" => "Données manquantes"]);
     	exit;
 	}
-	if (!isset($data["title"], $data["description"])) {
+	if (!isset($title, $description)) {
     	echo json_encode([
 			"success" => false, 
 			"message" => "Champs à remplir par l'utilisateur manquants"]);
     	exit;
 	}
-	$user_id = $_SESSION["user_id"];
-	$title = $data["title"];
-	$description = $data["description"];
-	$file_directory = $data["file_directory"];	
+	//check if title already exist.
+	$query = "SELECT title FROM photos WHERE title=:title";
+	$stmt = $conn->prepare($query);
+	$stmt->bindParam(":title", $title);
+	$stmt->execute();
+	$existing_title = $stmt->fetch(PDO::FETCH_ASSOC);
+	if($existing_title) {
+		echo json_encode([
+			"message" => "Ce titre est déjà utilisé"
+		]);
+		exit;
+	}
+	//create photo.
 	$query = "INSERT INTO photos (user_id, title, description, file_directory) VALUES (:user_id, :title, :description, :file_directory)";
 	$stmt = $conn->prepare($query);
 	$stmt->bindParam(":user_id", $user_id);

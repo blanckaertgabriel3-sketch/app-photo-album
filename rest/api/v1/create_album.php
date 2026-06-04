@@ -29,14 +29,33 @@ function create_album($conn) {
 	}
 	$owner_id = $_SESSION["user_id"];
 	$data = json_decode(file_get_contents("php://input"), true);
+	if(!$data) {
+		echo json_encode([
+			"message" => "json invalide pour créer une photo"
+		]);
+		exit;
+	}
 	$title = $data["title"];
 
-	if(!isset($title, $owner_id)) {
+	if(!isset($title)) {
 		echo json_encode([
 			"message" => "Données manquantes pour créer un album"
 		]);
 		exit;
 	}
+	//check if title already exist.
+	$query = "SELECT title FROM albums WHERE title=:title";
+	$stmt = $conn->prepare($query);
+	$stmt->bindParam(":title", $title);
+	$stmt->execute();
+	$existing_title = $stmt->fetch(PDO::FETCH_ASSOC);
+	if($existing_title) {
+		echo json_encode([
+			"message" => "Ce titre est déjà utilisé"
+		]);
+		exit;
+	}
+	//create album.
 	$query = "INSERT INTO albums (title, owner_id) VALUES (:title, :owner_id)";
 	$stmt = $conn->prepare($query);
 	$stmt->bindParam(":title", $title);
