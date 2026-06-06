@@ -45,7 +45,7 @@ create_btn.addEventListener("click", async () => {
         if(!upload_result.success) {
             return;
         }
-        const create_response = await fetch("http://localhost:8000/rest/api/v1/create_photo.php", {
+        const create_response = await fetch("http://localhost:8000/rest/api/v1/albums.php?action=create_album", {
             method: "POST",
             body: JSON.stringify({
                 title: title_input.value,

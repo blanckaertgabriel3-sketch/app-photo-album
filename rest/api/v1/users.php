@@ -115,7 +115,7 @@ function createUser($conn) {
 			$stmt->execute();
 			echo json_encode([
 				"success" => true,
-				"message" => "Utilisateur crée"
+				"message" => "Utilisateur créée"
 				]);
 		}else {
 			echo json_encode([

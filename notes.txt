@@ -1,24 +1,30 @@
 agenda 
 --------------------------------------------
 
-me 3 juin :  ø
+ve 5 juin : 
 
-je 4 juin : 
-- Changement de fileDirectory stocké dans photos. Car le chemin du fichier n'est pas bon aucune image n'est trouvé. Remplacer le chemin par un chemin comprenand la date et d'autres éléments qui diminient le risque de conflicts.
-	- Les utilisateurs peuvent maintenant utiliser plusieurs fois la même photo pour leur gestion de photo.
-- Pb résolu : je remontais trop loin dans les dossiers alors le dossier uploads n'étais pas trouvé, pour la fonction : move_uploaded_file() .J'avais un échec constant d'uploads, targetPath étais toujours undefined. 
-- Résolution Pb. Table photos bdd : changement targetPath, qui était invalide à mettre dans une balise img. Le targetPath est à présent insérable dans une balise img.
-- Gestion erreur : Lors de la déconnexion : Si la page hmtl ne contient pas de div avec id = msg_box. Il y avait une erreur. J'ai mis en place une vérification de présence de cette balise. Si elle est présente alors les messages d'erreurs de déconnexion peuvent étre afficher dans cette balise.
-- Implémentation architecture mvc pour la gestion album.
-- Gestion album : Récupérer la taille du tableau qui retourne les resultats d'images. Afficher en fonction de la taille du tableau des balises img dans la page html.
-- Affichage de la 1er photo retournée par la route de recherche_photo. En fonction de l'entrée utilisateur dans la barre de recherche.
-- Suppression des éléments img lors d'une nouvelle recherche ou si une recherche est vide.
-- Limite du nombre de création de balise html img, lors de la recherche d'une photo dans la barre de recherche. Ceci avait un trop grand impact sur la fluidité du défilement de la page
-- Il n'est plus possible d'avoir dans une même table photo, album 2 titres identiques.
-
+sa 6 juin : 
+- Gestion photo : Suppression des balises <a> que crée la barre de recherche. à chaque modifications de recherche il y avait une pollution de balises <a> dans la pages.
+- Blocage titre composé d'espaces pour albums et photos.
+- Création d'élément photos lors d'une sélection de photo retourné par la recherche. Composé de la photo stocké en bdd et, des info fictives pour les photos.
+- Création route api photos_albums : Cette route insert dans la table photos_albums l'id : photo et album, puis la position de la photo dans l'album.
+- Exécution de la requête photos_albums lors de la pression du btn de création d'album.
+- Probléme rencontré : Envoie d'une requête pour faire la liaison photos_albums. Pour les tests j'essayais de mettre 2 fois les mêmes données ce qui n'est pas possible et me renvoyais une erreur http.
+- Modification de route api, création de photo et album. Tous les paramètres peuvent maintenant être remplis dans la bdd. Mais sont tous obligatoire.
 
 à faire
 --------------------------------------------
 
-- Gestion photo : Les images téléchargés ne font pas les mêmes dimensions.
-- Gestion photo : Il faut supprimer l'upload qui vient d'être fait, si il y a un échec de création pour la photo. Car si des fichiers sont uploadé mais que la création de la photo échoue, L'upload sera inutilisable par l'utilisateur. 
+- Gestion photo : Il faut supprimer l'upload qui vient d'être fait, si il y a un échec de création pour la photo. 
+Car si des fichiers sont uploadé mais que la création de la photo échoue, L'upload sera inutilisable par l'utilisateur. 
+
+- Gestion photo : Redimensionner et compresser les fichiers après l'upload.
+
+
+
+- Gestion album : Suppression, déplacement img dans l'album.
+
+- Gestion album : Gestion erreur lorsqu'un utilisateur essaye de créer 2 albums identiques. Génére une errur http.
+
+- Gestion album : Barre de recherche, si on spam espace et supp. il y a plein de requêtes qui ce font en même temps. 
+Alors il y a plus de résultat de recherche que le max autorisé.

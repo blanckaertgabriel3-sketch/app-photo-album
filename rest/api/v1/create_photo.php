@@ -29,7 +29,7 @@ function create_photo($conn) {
 			"message" => "Utilisateur non connecté"
 		]);
 		exit;
-	}
+	}	
 	$data = json_decode(file_get_contents("php://input"),true);
 	if(!$data) {
 		echo json_encode([
@@ -38,21 +38,53 @@ function create_photo($conn) {
 		exit;
 	}
 	$user_id = $_SESSION["user_id"];
-	$title = $data["title"];
+	$title = trim($data["title"]);
 	$description = $data["description"];
 	$file_directory = $data["file_directory"];	
+	$hashtag = $data["hashtag"];
+	$import_date = $data["import_date"];
+	$messages_allowed = $data["messages_allowed"];
 	if (!isset($file_directory)) {
     	echo json_encode([
 			"success" => false, 
 			"message" => "Données manquantes"]);
     	exit;
 	}
-	if (!isset($title, $description)) {
+	if(!isset($title) || $title === "") {
+		echo json_encode([
+			"message" => "Titre manquant"
+		]);	
+		exit;
+	}
+	if (!isset($description)) {
     	echo json_encode([
 			"success" => false, 
-			"message" => "Champs à remplir par l'utilisateur manquants"]);
+			"message" => "Description manquante"
+		]);
     	exit;
 	}
+	if (!isset($import_date)) {
+    	echo json_encode([
+			"success" => false, 
+			"message" => "Date d'import manquante"
+		]);
+    	exit;
+	}
+	if (!isset($hashtag)) {
+    	echo json_encode([
+			"success" => false, 
+			"message" => "Hashtag manquant"
+		]);
+    	exit;
+	}
+	if (!isset($messages_allowed)) {
+    	echo json_encode([
+			"success" => false, 
+			"message" => "Autorisation de messages manquante"
+		]);
+    	exit;
+	}
+	
 	//check if title already exist.
 	$query = "SELECT title FROM photos WHERE title=:title";
 	$stmt = $conn->prepare($query);
@@ -66,12 +98,15 @@ function create_photo($conn) {
 		exit;
 	}
 	//create photo.
-	$query = "INSERT INTO photos (user_id, title, description, file_directory) VALUES (:user_id, :title, :description, :file_directory)";
+	$query = "INSERT INTO photos (user_id, title, description, file_directory, hashtag, import_date, messages_allowed) VALUES (:user_id, :title, :description, :file_directory, :hashtag, :import_date, :messages_allowed)";
 	$stmt = $conn->prepare($query);
 	$stmt->bindParam(":user_id", $user_id);
 	$stmt->bindParam(":title", $title);
 	$stmt->bindParam(":description", $description);
 	$stmt->bindParam(":file_directory", $file_directory);
+	$stmt->bindParam(":hashtag", $hashtag);
+	$stmt->bindParam(":import_date", $import_date);
+	$stmt->bindParam(":messages_allowed", $messages_allowed);
 	$success = $stmt->execute();
 	
 	if(!$success) {
@@ -83,6 +118,6 @@ function create_photo($conn) {
 	}
 	echo json_encode([
 		"success" => true,
-		"message" => "Photo crée"
+		"message" => "Photo créée"
 	]);
 }
