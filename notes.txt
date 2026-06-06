@@ -1,7 +1,7 @@
 agenda 
 --------------------------------------------
 
-ve 5 juin : 
+ve 5 juin : ø
 
 sa 6 juin : 
 - Gestion photo : Suppression des balises <a> que crée la barre de recherche. à chaque modifications de recherche il y avait une pollution de balises <a> dans la pages.
@@ -11,9 +11,13 @@ sa 6 juin :
 - Exécution de la requête photos_albums lors de la pression du btn de création d'album.
 - Probléme rencontré : Envoie d'une requête pour faire la liaison photos_albums. Pour les tests j'essayais de mettre 2 fois les mêmes données ce qui n'est pas possible et me renvoyais une erreur http.
 - Modification de route api, création de photo et album. Tous les paramètres peuvent maintenant être remplis dans la bdd. Mais sont tous obligatoire.
+- Création d'une route api, get_albums. Un vue de les afficher dans la page accueil.
+- Implémentation d'une architecture mvc avec la méthode POO pour l'ensemble du dossier frontend.
 
 à faire
 --------------------------------------------
+requête photos_albums dans AlbumController
+
 
 - Gestion photo : Il faut supprimer l'upload qui vient d'être fait, si il y a un échec de création pour la photo. 
 Car si des fichiers sont uploadé mais que la création de la photo échoue, L'upload sera inutilisable par l'utilisateur. 

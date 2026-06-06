@@ -1,4 +1,4 @@
-export default class view_album_management {
+export default class AlbumView {
 	constructor() {
 		this.msg_box = document.getElementById("msg_box");
 		this.create_btn = document.getElementById("create_btn");
