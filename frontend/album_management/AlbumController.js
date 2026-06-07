@@ -1,9 +1,11 @@
 export default class AlbumController {
-	constructor(album_view) {
+	constructor(album_view, album_model) {
+		this.view = album_view;
+		this.model = album_model;
 		this.result_photo_max = 3;
 		this.result_photo_count;
 		this.album_photos = [];
-		this.view = album_view;
+		this.album_hashtags = [];
 		this.view.search_photo.addEventListener("input", async () => {
 			const letters = this.view.search_photo.value;
 			try {
@@ -23,6 +25,7 @@ export default class AlbumController {
 				if(!search_result.success) {
 					return;
 				}
+				// 	Create img element. Add listener to it.
 				const result_photo_nb = search_result.photos_result.length;
 				if(!result_photo_nb > 0) {
 					this.view.msg_box.textContent = "Aucune photo trouvé";			
@@ -33,24 +36,21 @@ export default class AlbumController {
 				}else {
 					this.result_photo_count = this.result_photo_max;
 				}
-				//create html element. Add listener to it.
 				for(let i = 0 ; i<this.result_photo_count ; i++) {
 					const imgSrc = search_result.photos_result[i].file_directory;
 					this.view.createImgElement(imgSrc);
 					this.view.newA.addEventListener("click", () => {
 						this.view.createAlbumPhotoElement(imgSrc);
-						//insert photo info in an array.
+						// push photos in an array. Will be use for http  request 
 						this.album_photos.push(search_result.photos_result[i]);
 					})
 				}
 
-			}
-			catch (error) {
+			} catch (error) {
 				this.view.msg_box.textContent = "Erreur Serveur";
 				console.error(error);
 			}
 		});
-
 		// create an album.
 		this.view.create_btn.addEventListener("click", async () => {
 		try {
@@ -58,7 +58,9 @@ export default class AlbumController {
 			const create_response = await fetch("http://localhost:8000/rest/api/v1/albums.php?action=create_album", {
 				method: "POST",
 				body: JSON.stringify({
-					title: this.view.title_input.value
+					title: this.view.title_input.value,
+					description: this.view.description_input.value,
+					messages_allowed: this.model.booleanValue(this.view.messages_allowed_btn.textContent)
 				})
 			});
 			if(!create_response.ok) {
@@ -93,6 +95,48 @@ export default class AlbumController {
 				console.error(error);
 			}
 		});
+		this.view.add_hashtag_btn.addEventListener("click", async () => {
+			try {
+				const create_hashtag_response = await fetch ("http://localhost:8000/rest/api/v1/hashtags.php?action=create_hashtag", {
+					method: "POST",
+					body: JSON.stringify({
+						name: this.view.hashtag_input.value
+					})
+				});
+				if(!create_hashtag_response.ok) {
+					this.view.msg_box.textContent = "Erreur HTTP";
+					return;
+				}
+				const create_hashtag_result = await create_hashtag_response.json();
+				this.view.msg_box.textContent = create_hashtag_result.message;
+
+				// get hashtag name 
+				const get_hashtag_response = await fetch ("http://localhost:8000/rest/api/v1/hashtags.php?action=get_hashtag", {
+					method: "POST",
+					body: JSON.stringify({
+						hashtag_id: create_hashtag_result.hashtag_id
+					})
+				});
+				if(!get_hashtag_response.ok) {
+					this.view.msg_box.textContent = "Erreur HTTP";
+					return;
+				}
+				const get_hashtag_result = await get_hashtag_response.json();
+				this.view.msg_box.textContent = get_hashtag_result.message;
+				if(!get_hashtag_result.success) {
+					return;
+				}
+				this.view.createHashtagElement(get_hashtag_result.hashtag.name);
+				this.album_hashtags.push(get_hashtag_result.hashtag);
+				console.log("album has", this.album_hashtags);
+			} catch (error) {
+				this.view.msg_box.textContent = "Erreur Serveur";
+				console.error(error);
+			}
+		})
+		this.view.messages_allowed_btn.addEventListener("click", () => {
+			this.view.messages_allowed_btn.textContent = this.model.swapValue(messages_allowed_btn.textContent);
+		})
 
 	}
 }

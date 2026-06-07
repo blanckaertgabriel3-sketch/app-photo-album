@@ -1,22 +1,24 @@
 agenda 
 --------------------------------------------
-
-ve 5 juin : ø
-
-sa 6 juin : 
-- Gestion photo : Suppression des balises <a> que crée la barre de recherche. à chaque modifications de recherche il y avait une pollution de balises <a> dans la pages.
-- Blocage titre composé d'espaces pour albums et photos.
-- Création d'élément photos lors d'une sélection de photo retourné par la recherche. Composé de la photo stocké en bdd et, des info fictives pour les photos.
-- Création route api photos_albums : Cette route insert dans la table photos_albums l'id : photo et album, puis la position de la photo dans l'album.
-- Exécution de la requête photos_albums lors de la pression du btn de création d'album.
-- Probléme rencontré : Envoie d'une requête pour faire la liaison photos_albums. Pour les tests j'essayais de mettre 2 fois les mêmes données ce qui n'est pas possible et me renvoyais une erreur http.
-- Modification de route api, création de photo et album. Tous les paramètres peuvent maintenant être remplis dans la bdd. Mais sont tous obligatoire.
-- Création d'une route api, get_albums. Un vue de les afficher dans la page accueil.
-- Implémentation d'une architecture mvc avec la méthode POO pour l'ensemble du dossier frontend.
+di 7 juin : 
+- dans la bdd ajout de restriction, public private, restrict pour les tables albums et photos
+- ajout d'éléments dans la page html pour les champs : descriptions, hashtag, restriction, autorisation de commentaires, invitation collaboration, date de création
+- Ajout des nouveaux éléments au DOM AlbumView
+- Création table hashtags, albums_hashtags
+- Création routes api, hashtag : get_hashtag, create_hashtag
+- Création routes api, albums_hashtags : instetion de l'id album et hashtag dans la table.
+- ajouter restrictions, pv pbc restrinct, dans la bdd
+- Fonction de création de balises pour les hashtag. 
+- Changement d'autorisation de commentaires pour les albums, avec un bouton qui change de valeur au click : oui, non.
 
 à faire
 --------------------------------------------
 requête photos_albums dans AlbumController
+
+- Gestion album : On ne peut pas créer 2 hashtag de même nom sans avoir une erreur http. hashtags.php AlbumController 
+
+- Gestion album : Gestion erreur lorsqu'un utilisateur essaye de créer 2 albums identiques. Génére une errur http.
+
 
 
 - Gestion photo : Il faut supprimer l'upload qui vient d'être fait, si il y a un échec de création pour la photo. 
@@ -24,11 +26,7 @@ Car si des fichiers sont uploadé mais que la création de la photo échoue, L'u
 
 - Gestion photo : Redimensionner et compresser les fichiers après l'upload.
 
-
-
 - Gestion album : Suppression, déplacement img dans l'album.
-
-- Gestion album : Gestion erreur lorsqu'un utilisateur essaye de créer 2 albums identiques. Génére une errur http.
 
 - Gestion album : Barre de recherche, si on spam espace et supp. il y a plein de requêtes qui ce font en même temps. 
 Alors il y a plus de résultat de recherche que le max autorisé.

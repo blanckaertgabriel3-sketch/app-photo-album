@@ -38,13 +38,12 @@ function create_album($conn) {
 	$data = json_decode(file_get_contents("php://input"), true);
 	if(!$data) {
 		echo json_encode([
-			"message" => "json invalide pour créer une photo"
+			"message" => "json invalide pour créer un album"
 		]);
 		exit;
 	}
 	$title = trim($data["title"]);
 	$description = $data["description"];
-	$hashtag = $data["hashtag"];
 	$creation_date = $data["creation_date"];
 	$messages_allowed = $data["messages_allowed"];
 
@@ -60,21 +59,15 @@ function create_album($conn) {
 		]);	
 		exit;
 	}
-	if(!isset($hashtag)) {
+	if(!isset($messages_allowed)) {
 		echo json_encode([
-			"message" => "Hashtag manquant"
+			"message" => "Autorisation de messages manquante"
 		]);	
 		exit;
 	}
 	if(!isset($creation_date)) {
 		echo json_encode([
 			"message" => "Date de création manquante"
-		]);	
-		exit;
-	}
-	if(!isset($messages_allowed)) {
-		echo json_encode([
-			"message" => "Autorisation de messages manquante"
 		]);	
 		exit;
 	}
@@ -91,12 +84,11 @@ function create_album($conn) {
 		exit;
 	}
 	// create album.
-	$query = "INSERT INTO albums (title, owner_id, description, hashtag, creation_date, messages_allowed) VALUES (:title, :owner_id, :description, :hashtag, :creation_date, :messages_allowed)";
+	$query = "INSERT INTO albums (title, owner_id, description, creation_date, messages_allowed) VALUES (:title, :owner_id, :description, :creation_date, :messages_allowed)";
 	$stmt = $conn->prepare($query);
 	$stmt->bindParam(":title", $title);
 	$stmt->bindParam(":owner_id", $owner_id);
 	$stmt->bindParam(":description", $description);
-	$stmt->bindParam(":hashtag", $hashtag);
 	$stmt->bindParam(":creation_date", $creation_date);
 	$stmt->bindParam(":messages_allowed", $messages_allowed);
 	$success = $stmt->execute();

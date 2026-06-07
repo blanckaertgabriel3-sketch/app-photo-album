@@ -31,3 +31,23 @@ img {
 #photo_management a{
 	cursor: pointer;
 }
+#info_album {
+	display: flex;
+	flex-direction: column;
+	gap: 5px;
+}
+#menu {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-around;
+}
+#menu * {
+	text-decoration: none;
+	list-style-type: none;
+	padding: 20px 0px 20px 0px;
+}
+header  h1{
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}

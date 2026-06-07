@@ -1,13 +1,28 @@
 export default class AlbumView {
 	constructor() {
-		this.msg_box = document.getElementById("msg_box");
-		this.create_btn = document.getElementById("create_btn");
+		// info_album
 		this.title_input = document.getElementById("title_input");
+		this.description_input = document.getElementById("description_input");
+		this.hashtag_input = document.getElementById("hashtag_input");
+		this.add_hashtag_btn = document.getElementById("add_hashtag_btn");
+		this.hashtag_result = document.getElementById("hashtag_result");
+		this.messages_allowed = document.getElementById("messages_allowed");
+		this.messages_allowed_btn = document.getElementById("messages_allowed_btn");
+		this.restriction_public_btn = document.getElementById("restriction_public_btn");
+		this.restriction_private_btn = document.getElementById("restriction_private_btn");
+		this.restriction_restrict_btn = document.getElementById("restriction_restrict_btn");
+		this.friend_input_search = document.getElementById("friend_input_search");
+		this.friend_search_result = document.getElementById("friend_search_result");
+		this.creation_date_span = document.getElementById("creation_date_span");
+		// container_album_photos
+		this.search_photo = document.getElementById("search_photo");
 		this.photo_management = document.getElementById("photo_management");
 		this.selected_photos = document.getElementById("selected_photos");
-		this.search_photo = document.getElementById("search_photo");
-		this.newA;
+		
+		this.create_btn = document.getElementById("create_btn");
+		this.msg_box = document.getElementById("msg_box");
 
+		this.newA;
 	}
 	createImgElement(srcValue) {
 		this.newA = document.createElement("a");
@@ -81,5 +96,18 @@ export default class AlbumView {
 
 		return photoContainer;
 	}
+	createHashtagElement(hashtag) {
+		const newLi = document.createElement("li");
+		const removeBtn = document.createElement("button");
 
+		newLi.textContent = hashtag;
+
+		removeBtn.textContent = "X";
+		removeBtn.classList.add("hashtag_remove_btn");
+
+		newLi.appendChild(removeBtn);
+		this.hashtag_result.appendChild(newLi);
+
+		return newLi;
+	}
 }
