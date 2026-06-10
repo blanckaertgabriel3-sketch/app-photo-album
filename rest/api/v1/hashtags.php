@@ -16,7 +16,6 @@ switch ($method) {
 			get_hashtag($conn);
 		}
 		break;
-	
 	default:
 		echo json_encode([
 			"message" => "Requête invalide"
@@ -25,23 +24,31 @@ switch ($method) {
 }
 function create_hashtag($conn) {
 	session_start();
-	if(!$_SESSION["user_id"]) {
+	if (!isset($_SESSION["user_id"])) {
+		echo json_encode([
+			"message" => "Utilisateur non connecté"
+		]);
+		exit;
+	}
+
+	$query = "SELECT id FROM users WHERE id = :id";
+	$stmt = $conn->prepare($query);
+	$stmt->bindParam(":id", $_SESSION["user_id"]);
+	$stmt->execute();
+
+	if (!$stmt->fetch()) {
+		session_destroy();
+
 		echo json_encode([
 			"message" => "Utilisateur non connecté"
 		]);
 		exit;
 	}
 	$data = json_decode(file_get_contents("php://input"), true);
-	if(!$data) {
-		echo json_encode([
-			"message" => "json invalide pour créer un hashtag"
-		]);
-		exit;
-	}
 	$name =  $data["name"];
 	if(!isset($name)) {
 		echo json_encode([
-			"message" => "Hashtag manquant"
+			"message" => "Hashtag manquant dans le json"
 		]);
 		exit;
 	}
@@ -63,7 +70,21 @@ function create_hashtag($conn) {
 }
 function get_hashtag($conn) {
 	session_start();
-	if(!$_SESSION["user_id"]) {
+	if (!isset($_SESSION["user_id"])) {
+		echo json_encode([
+			"message" => "Utilisateur non connecté"
+		]);
+		exit;
+	}
+
+	$query = "SELECT id FROM users WHERE id = :id";
+	$stmt = $conn->prepare($query);
+	$stmt->bindParam(":id", $_SESSION["user_id"]);
+	$stmt->execute();
+
+	if (!$stmt->fetch()) {
+		session_destroy();
+
 		echo json_encode([
 			"message" => "Utilisateur non connecté"
 		]);

@@ -25,7 +25,21 @@ switch ($method) {
 }
 function photos_albums($conn) {
 
-	if(!isset($_SESSION["user_id"])) {
+	if (!isset($_SESSION["user_id"])) {
+		echo json_encode([
+			"message" => "Utilisateur non connecté"
+		]);
+		exit;
+	}
+
+	$query = "SELECT id FROM users WHERE id = :id";
+	$stmt = $conn->prepare($query);
+	$stmt->bindParam(":id", $_SESSION["user_id"]);
+	$stmt->execute();
+
+	if (!$stmt->fetch()) {
+		session_destroy();
+
 		echo json_encode([
 			"message" => "Utilisateur non connecté"
 		]);
@@ -34,7 +48,7 @@ function photos_albums($conn) {
 	$data = json_decode(file_get_contents("php://input"), true);
 	if(!$data) {
 		echo json_encode([
-			"message" => "json invalide pour le lien photo album"
+			"message" => "json invalide pour l'ajout des photos à l'album"
 		]);
 		exit;
 	}
@@ -67,11 +81,11 @@ function photos_albums($conn) {
 	$success = $stmt->execute();
 	if(!$success) {
 		echo json_encode([
-			"message" => "Échec de création du lien photo album"
+			"message" => "Échec de l'ajout des photos à l'album"
 		]);
 		exit;
 	}
 	echo json_encode([
-		"message" => "Création de l'album complétée"
+		"message" => "Les photos ont été ajoutée"
 	]);
 }

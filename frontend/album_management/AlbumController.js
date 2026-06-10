@@ -6,6 +6,7 @@ export default class AlbumController {
 		this.result_photo_count;
 		this.album_photos = [];
 		this.album_hashtags = [];
+
 		this.view.search_photo.addEventListener("input", async () => {
 			const letters = this.view.search_photo.value;
 			try {
@@ -53,90 +54,94 @@ export default class AlbumController {
 		});
 		// create an album.
 		this.view.create_btn.addEventListener("click", async () => {
-		try {
-			//create_album
-			const create_response = await fetch("http://localhost:8000/rest/api/v1/albums.php?action=create_album", {
-				method: "POST",
-				body: JSON.stringify({
-					title: this.view.title_input.value,
-					description: this.view.description_input.value,
-					messages_allowed: this.model.booleanValue(this.view.messages_allowed_btn.textContent)
+			const creation_date = new Date().toISOString().slice(0, 19).replace("T", " ");
+			try {
+				//create_album
+				const create_response = await fetch("http://localhost:8000/rest/api/v1/albums.php?action=create_album", {
+					method: "POST",
+					body: JSON.stringify({
+						title: this.view.title_input.value,
+						description: this.view.description_input.value,
+						messages_allowed: this.model.booleanValue(this.view.messages_allowed_btn.textContent),
+						creation_date: creation_date
+					})
+				});
+				if(!create_response.ok) {
+					this.view.msg_box.textContent = "Erreur HTTP";
+					return;
+				}   
+				const create_result = await create_response.json();
+				this.view.msg_box.textContent = create_result.message;
+				if(!create_result.success) {
+					return;
+				}
+
+				// //photos_album
+				if(!create_result.album_id) {
+					this.view.msg_box.textContent = "Il manque l'idendifiant de l'album";
+					return;
+				}
+				this.album_photos.forEach(async (photos, index) => {
+					const photos_album_response = await fetch("http://localhost:8000/rest/api/v1/photos_albums.php", {
+						method: "POST",
+						body: JSON.stringify({
+							photo_id: photos.id,
+							album_id: create_result.album_id,
+							display_order: index
+						})
+					});
+					if(!photos_album_response.ok) {
+						this.view.msg_box.textContent = "Erreur HTTP";
+						return;
+					}   
+					const photos_album_result = await photos_album_response.json();
+					this.view.msg_box.textContent = photos_album_result.message;
 				})
-			});
-			if(!create_response.ok) {
-				this.view.msg_box.textContent = "Erreur HTTP";
-				return;
-			}   
-			const create_result = await create_response.json();
-			this.view.msg_box.textContent = create_result.message;
-			// //photos_album
-			// if(!create_result.album_id) {
-			// 	// this.view.msg_box.textContent = "Il manque album_id";			
-			// 	return;
-			// }
-			// for(let i = 0 ; i < this.album_photos.length ; i++) {
-			// 	const photos_album_response = await fetch("http://localhost:8000/rest/api/v1/photos_albums.php", {
-			// 		method: "POST",
-			// 		body: JSON.stringify({
-			// 			photo_id: this.album_photos[i].id,
-			// 			album_id: create_result.album_id,
-			// 			display_order: i
-			// 		})
-			// 	});
-			// 	if(!photos_album_response.ok) {
-			// 		this.view.msg_box.textContent = "Erreur HTTP";
-			// 		return;
-			// 	}   
-			// 	const photos_album_result = await photos_album_response.json();
-			// 	this.view.msg_box.textContent = photos_album_result.message;
-			// }
+
+				// create hashtag
+				this.album_hashtags.forEach(async (hashtag) => {
+					const create_hashtag_response = await fetch ("http://localhost:8000/rest/api/v1/hashtags.php?action=create_hashtag", {
+						method: "POST",
+						body: JSON.stringify({
+							name: hashtag
+						})
+					});
+					if(!create_hashtag_response.ok) {
+						this.view.msg_box.textContent = "Erreur HTTP";
+						return;
+					}
+
+					const create_hashtag_result = await create_hashtag_response.json();
+					this.view.msg_box.textContent = create_hashtag_result.message;
+					if(!create_hashtag_result.success) {
+						return;
+					}
+					this.view.msg_box.textContent = "Tous les hashtags ont été créée";				
+				});
 			} catch (error) {
 				this.view.msg_box.textContent = "Erreur serveur";
 				console.error(error);
 			}
 		});
 		this.view.add_hashtag_btn.addEventListener("click", async () => {
-			try {
-				const create_hashtag_response = await fetch ("http://localhost:8000/rest/api/v1/hashtags.php?action=create_hashtag", {
-					method: "POST",
-					body: JSON.stringify({
-						name: this.view.hashtag_input.value
-					})
-				});
-				if(!create_hashtag_response.ok) {
-					this.view.msg_box.textContent = "Erreur HTTP";
-					return;
-				}
-				const create_hashtag_result = await create_hashtag_response.json();
-				this.view.msg_box.textContent = create_hashtag_result.message;
-
-				// get hashtag name 
-				const get_hashtag_response = await fetch ("http://localhost:8000/rest/api/v1/hashtags.php?action=get_hashtag", {
-					method: "POST",
-					body: JSON.stringify({
-						hashtag_id: create_hashtag_result.hashtag_id
-					})
-				});
-				if(!get_hashtag_response.ok) {
-					this.view.msg_box.textContent = "Erreur HTTP";
-					return;
-				}
-				const get_hashtag_result = await get_hashtag_response.json();
-				this.view.msg_box.textContent = get_hashtag_result.message;
-				if(!get_hashtag_result.success) {
-					return;
-				}
-				this.view.createHashtagElement(get_hashtag_result.hashtag.name);
-				this.album_hashtags.push(get_hashtag_result.hashtag);
-				console.log("album has", this.album_hashtags);
-			} catch (error) {
-				this.view.msg_box.textContent = "Erreur Serveur";
-				console.error(error);
-			}
+			const hashtag_name = this.view.hashtag_input.value;
+			this.view.createHashtagElement(hashtag_name);
+			this.album_hashtags.push(hashtag_name);
 		})
 		this.view.messages_allowed_btn.addEventListener("click", () => {
-			this.view.messages_allowed_btn.textContent = this.model.swapValue(messages_allowed_btn.textContent);
+			this.view.messages_allowed_btn.textContent = this.model.swapValue(this.view.messages_allowed_btn.textContent);
 		})
+		this.view.hashtag_result.addEventListener("click", (event) => {
+			if(event.target.classList.contains("hashtag_remove_btn")) {
+				event.target.parentElement.remove();
 
+				const hashtag = event.target.parentElement.firstChild.textContent.trim();
+				const hashtagPosition = this.album_hashtags.indexOf(hashtag);
+				if(hashtagPosition !== -1) {
+					this.album_hashtags.splice(hashtagPosition, 1);
+					this.view.msg_box.textContent = "Hashtag supprimé";
+				}
+			}
+		});
 	}
 }

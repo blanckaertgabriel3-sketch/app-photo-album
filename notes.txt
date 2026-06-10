@@ -1,32 +1,33 @@
 agenda 
 --------------------------------------------
-di 7 juin : 
-- dans la bdd ajout de restriction, public private, restrict pour les tables albums et photos
-- ajout d'éléments dans la page html pour les champs : descriptions, hashtag, restriction, autorisation de commentaires, invitation collaboration, date de création
-- Ajout des nouveaux éléments au DOM AlbumView
-- Création table hashtags, albums_hashtags
-- Création routes api, hashtag : get_hashtag, create_hashtag
-- Création routes api, albums_hashtags : instetion de l'id album et hashtag dans la table.
-- ajouter restrictions, pv pbc restrinct, dans la bdd
-- Fonction de création de balises pour les hashtag. 
-- Changement d'autorisation de commentaires pour les albums, avec un bouton qui change de valeur au click : oui, non.
+
+lu 8 juin : ø
+
+ma 9 juin : 
+- Possibilité de suppression d'hashtag lors de la création d'album.
+- Changement du format de la date envoyé en json pour la requête de création d'album.
+- Création d'hashtag, mais c'est une table avec un name unique.
+- Réglage pb : body de requête pour l'ajout de photos à l'album, est maintenant opérationnel.
+- Ajout d'une requête sql pour intensifier la vérification de connexion. Si la bdd est vidé et que l'utilisateur est encore sur une page, il sera avertit qu'il n'est pas connecté.
+- Réglage pb, ERREUR HTTP : Il y avait une erreur lors de la création d'un album avec une composition identique de photos. Il est maintenant possible de créer un album sans photos, et avec une composition de photos identique, ou bien une nouvelle composition.
+
+me 10 juin : 
+
+
+
 
 à faire
 --------------------------------------------
-requête photos_albums dans AlbumController
-
-- Gestion album : On ne peut pas créer 2 hashtag de même nom sans avoir une erreur http. hashtags.php AlbumController 
-
-- Gestion album : Gestion erreur lorsqu'un utilisateur essaye de créer 2 albums identiques. Génére une errur http.
+- Gestion album : Définir la restriction ; public, privé, restrinct.
+- Gestion album : Imposer une limite charactères pour hashtags.
 
 
 
-- Gestion photo : Il faut supprimer l'upload qui vient d'être fait, si il y a un échec de création pour la photo. 
-Car si des fichiers sont uploadé mais que la création de la photo échoue, L'upload sera inutilisable par l'utilisateur. 
+- Gestion album ERREUR HTTP : Il faut une vérification d'existance d'hashtag. Sinon ERREUR HTTP.
+
+- Gestion album Bug : Barre de recherche, si on spam espace et supp. il y a plein de requêtes qui ce font en même temps. 
+Alors il y a plus de résultat de recherche que le max autorisé.
+
 
 - Gestion photo : Redimensionner et compresser les fichiers après l'upload.
 
-- Gestion album : Suppression, déplacement img dans l'album.
-
-- Gestion album : Barre de recherche, si on spam espace et supp. il y a plein de requêtes qui ce font en même temps. 
-Alors il y a plus de résultat de recherche que le max autorisé.

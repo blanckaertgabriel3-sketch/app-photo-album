@@ -26,7 +26,21 @@ switch ($method) {
 
 function create_album($conn) {
 	session_start();
-	if(!$_SESSION["user_id"]) {
+	if (!isset($_SESSION["user_id"])) {
+		echo json_encode([
+			"message" => "Utilisateur non connecté"
+		]);
+		exit;
+	}
+
+	$query = "SELECT id FROM users WHERE id = :id";
+	$stmt = $conn->prepare($query);
+	$stmt->bindParam(":id", $_SESSION["user_id"]);
+	$stmt->execute();
+
+	if (!$stmt->fetch()) {
+		session_destroy();
+
 		echo json_encode([
 			"message" => "Utilisateur non connecté"
 		]);
@@ -43,7 +57,7 @@ function create_album($conn) {
 		exit;
 	}
 	$title = trim($data["title"]);
-	$description = $data["description"];
+	$description = trim($data["description"]);
 	$creation_date = $data["creation_date"];
 	$messages_allowed = $data["messages_allowed"];
 
@@ -53,7 +67,7 @@ function create_album($conn) {
 		]);	
 		exit;
 	}
-	if(!isset($description)) {
+	if(!isset($description) || $description === "") {
 		echo json_encode([
 			"message" => "Description manquante"
 		]);	
@@ -95,23 +109,39 @@ function create_album($conn) {
 	$album_id = $conn->lastInsertId();
 	if(!$success) {
 		echo json_encode([
+			"success" => false,
 			"message" => "Échec de la création d'album"
 		]);
 		exit;
 	}
 	echo json_encode([
+		"success" => true,
 		"message" => "Album créée",
 		"album_id" => $album_id
 	]);
 }
 function get_albums($conn) {
 	session_start();
-	if(!$_SESSION["user_id"]) {
+	if (!isset($_SESSION["user_id"])) {
 		echo json_encode([
 			"message" => "Utilisateur non connecté"
 		]);
 		exit;
-	}	
+	}
+
+	$query = "SELECT id FROM users WHERE id = :id";
+	$stmt = $conn->prepare($query);
+	$stmt->bindParam(":id", $_SESSION["user_id"]);
+	$stmt->execute();
+
+	if (!$stmt->fetch()) {
+		session_destroy();
+
+		echo json_encode([
+			"message" => "Utilisateur non connecté"
+		]);
+		exit;
+	}
 	$query = "SELECT * FROM albums ORDER BY creation_date DESC";
 	$stmt = $conn->prepare($query);
 	$success = $stmt->execute();
