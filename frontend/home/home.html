@@ -23,6 +23,33 @@
 	<main>
 		<h3>Bonjour <span id="username_span"></span></h3>
 		<div id="msg_box"></div>
+		<div id="posts_container">
+			<div class="post">
+				<img src="../../rest/api/v1/uploads/1780998729_6a27e24932379_2508.jpg" alt="Img utilisateur">
+				<div class="title_date">
+					<p class="title">titre_ex</p>
+					<p> - </p>
+					<p class="creation_date">0000-00-00</p>
+				</div>
+				<ul class="hashtags">
+					<li>hashtag</li>
+					<li>hashtag</li>
+				</ul>
+				<p class="description">Description ex</p>
+				<button class="read_more">Lire la suite</button>
+				<ul class="interactions_with_post">
+					<li><a href="#"><i class="fa-solid fa-message"></i></a></li>
+					<li><a href="#"><i class="fa-solid fa-heart"></i></a></li>
+					<li><a href="#"><i class="fa-solid fa-share"></i></a></li>
+				</ul>
+			</div>
+		</div>
+		<h4>Pop-up de partage</h4>
+		<button id="open_pop_up">Ouvrir la pop-up</button>
+		<div id="modal">
+			<p>Bonjour depuis la pop-up</p>
+			<button id="close_pop_up">X</button>
+		</div>
 	</main>
 
 	<script src="../logout.js"></script>

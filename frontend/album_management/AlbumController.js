@@ -6,12 +6,16 @@ export default class AlbumController {
 		this.result_photo_count;
 		this.album_photos = [];
 		this.album_hashtags = [];
+		this.collaborators = [];
+		this.restriction = "private";
 
+		this.view.updateView(this.restriction);
+		// search photo
 		this.view.search_photo.addEventListener("input", async () => {
 			const letters = this.view.search_photo.value;
 			try {
 				this.view.removeImgElement();
-				const search_response = await fetch ("http://localhost:8000/rest/api/v1/search_photo.php?action=search_photo", {
+				const search_response = await fetch ("http://localhost:8000/rest/api/v1/photos.php?action=search", {
 					method: "POST",
 					body: JSON.stringify({
 						letters: letters
@@ -42,7 +46,6 @@ export default class AlbumController {
 					this.view.createImgElement(imgSrc);
 					this.view.newA.addEventListener("click", () => {
 						this.view.createAlbumPhotoElement(imgSrc);
-						// push photos in an array. Will be use for http  request 
 						this.album_photos.push(search_result.photos_result[i]);
 					})
 				}
@@ -52,6 +55,56 @@ export default class AlbumController {
 				console.error(error);
 			}
 		});
+
+		// search collaborators
+		this.view.friend_input_search.addEventListener("input", async () => {
+			this.view.removeFriendElement();
+			const letters = this.view.friend_input_search.value.trim();
+			if(letters == "") {
+				this.view.msg_box.textContent = "Entrez une lettre pour rechercher des collaborateurs";
+				return;
+			}
+			try {
+				const search_response = await fetch ("http://localhost:8000/rest/api/v1/users.php?action=search_users", {
+					method: "POST",
+					body: JSON.stringify({
+						letters: letters
+					})
+				});
+				if(!search_response.ok) {
+					this.view.msg_box.textContent = "Erreur HTTP";
+					return;
+				}
+				const search_result = await search_response.json();
+				this.view.msg_box.textContent = search_result.message;
+				if(!search_result.success) {
+					return;
+				}
+				// create element for each user result
+				search_result.users_result.forEach(async (user_result, index) => {
+					// listener for li element
+					let username = user_result.name;
+					this.view.createFriendElement(username).addEventListener("click", () => {
+						let collaborator_index = this.collaborators.indexOf(username);
+						if(collaborator_index === -1) {
+							// add collaborators, add listener for the remove btn
+							this.view.createCollaboratorsElement(username).addEventListener("click", () => {
+								this.view.removeCollaboratorsElement(username);
+								collaborator_index = this.collaborators.indexOf(username);
+								this.collaborators.splice(collaborator_index, 1);
+								console.log("collaborators array : ", this.collaborators);
+							})
+							this.collaborators.push(username);
+							console.log("collaborators array : ", this.collaborators);
+						}
+					});
+				});
+			} catch (error) {
+				this.view.msg_box.textContent = "Erreur Serveur";
+				console.error(error);
+			}
+		});
+
 		// create an album.
 		this.view.create_btn.addEventListener("click", async () => {
 			const creation_date = new Date().toISOString().slice(0, 19).replace("T", " ");
@@ -63,7 +116,8 @@ export default class AlbumController {
 						title: this.view.title_input.value,
 						description: this.view.description_input.value,
 						messages_allowed: this.model.booleanValue(this.view.messages_allowed_btn.textContent),
-						creation_date: creation_date
+						creation_date: creation_date,
+						restriction: this.restriction
 					})
 				});
 				if(!create_response.ok) {
@@ -81,8 +135,11 @@ export default class AlbumController {
 					this.view.msg_box.textContent = "Il manque l'idendifiant de l'album";
 					return;
 				}
+				if(this.album_photos.length <= 0) {
+					console.log("Aucune photo dans l'album");
+				}
 				this.album_photos.forEach(async (photos, index) => {
-					const photos_album_response = await fetch("http://localhost:8000/rest/api/v1/photos_albums.php", {
+					const photos_album_response = await fetch("http://localhost:8000/rest/api/v1/photos_albums.php?action=photos_albums", {
 						method: "POST",
 						body: JSON.stringify({
 							photo_id: photos.id,
@@ -99,6 +156,9 @@ export default class AlbumController {
 				})
 
 				// create hashtag
+				if(this.album_hashtags.length <= 0) {
+					console.log("Aucun hashtag dans l'album");
+				}
 				this.album_hashtags.forEach(async (hashtag) => {
 					const create_hashtag_response = await fetch ("http://localhost:8000/rest/api/v1/hashtags.php?action=create_hashtag", {
 						method: "POST",
@@ -116,15 +176,44 @@ export default class AlbumController {
 					if(!create_hashtag_result.success) {
 						return;
 					}
+
+					// albums_hashtags
+					const albums_hashtags_response = await fetch ("http://localhost:8000/rest/api/v1/albums_hashtags.php?action=albums_hashtags", {
+						method: "POST",
+						body: JSON.stringify({
+							hashtag_id: create_hashtag_result.hashtag_id,
+							album_id: create_result.album_id
+						})
+					});
+					if(!albums_hashtags_response.ok) {
+						this.view.msg_box.textContent = "Erreur HTTP";
+						return;
+					}
+					const albums_hashtags_result = await albums_hashtags_response.json();
+					this.view.msg_box.textContent = albums_hashtags_result.message;
+					if(!albums_hashtags_result.success) {
+						return;
+					}
 					this.view.msg_box.textContent = "Tous les hashtags ont été créée";				
 				});
+				console.log("Album Créée");
+				console.log("----------------------------------------------");
 			} catch (error) {
 				this.view.msg_box.textContent = "Erreur serveur";
 				console.error(error);
 			}
 		});
 		this.view.add_hashtag_btn.addEventListener("click", async () => {
-			const hashtag_name = this.view.hashtag_input.value;
+			const hashtag_name = this.view.hashtag_input.value.trim();
+			const album_hashtags_index = this.album_hashtags.indexOf(hashtag_name);
+			if(album_hashtags_index >= 0) {
+				this.view.msg_box.textContent = "Cet hashtag existe déjà pour l'album";
+				return;
+			}
+			if(hashtag_name  == "") {
+				this.view.msg_box.textContent = "Impossible de mettre un hashtag vide";
+				return;
+			}
 			this.view.createHashtagElement(hashtag_name);
 			this.album_hashtags.push(hashtag_name);
 		})
@@ -143,5 +232,18 @@ export default class AlbumController {
 				}
 			}
 		});
+		// Restriction listeners
+		this.view.restriction_public_btn.addEventListener("click", () => {
+			this.restriction = "public";
+			this.view.updateView(this.restriction);
+		})
+		this.view.restriction_private_btn.addEventListener("click", () => {
+			this.restriction = "private";
+			this.view.updateView(this.restriction);
+		})
+		this.view.restriction_restrict_btn.addEventListener("click", () => {
+			this.restriction = "restrict";
+			this.view.updateView(this.restriction);
+		})
 	}
 }

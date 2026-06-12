@@ -1,5 +1,5 @@
 <?php
-
+session_start();
 require "../../config/database.php";
 
 $db = new Database();
@@ -21,7 +21,7 @@ switch ($method) {
 		break;
 }
 function albums_hashtags($conn) {
-	session_start();
+	
 
 	if (!isset($_SESSION["user_id"])) {
 		echo json_encode([
@@ -72,11 +72,13 @@ function albums_hashtags($conn) {
 	$success = $stmt->execute();
 	if(!$success) {
 		echo json_encode([
+			"success" => false,
 			"message" => "Échec de lien album-hashtag"
 		]);
 		exit;
 	}
 	echo json_encode([
+		"success" => true,
 		"message" => "Lien album-hashtag, réussi"
 	]);
 }

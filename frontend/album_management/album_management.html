@@ -24,15 +24,17 @@
 		<div id="info_album">
 			<label for="title_input">Titre : <input id="title_input" type="text"></label>
 			<label for="description_input">Description : <input id="description_input" type="text"></label>
-			<label for="hashtag_input">Hashtag : <input id="hashtag_input" type="text"> <button id="add_hashtag_btn">Ajouter le hashtag</button></label>
+			<label for="hashtag_input">Hashtag : <input id="hashtag_input" type="text"> <button id="add_hashtag_btn">Ajouter un hashtag</button></label>
 			<ul id="hashtag_result"></ul>
-			<label for="messages_allowed">Autoriser les commentaires ? <button id="messages_allowed_btn">Non</button></label>
-			<label> Définir la restriction : <button id="restriction_public_btn">Public</button><button id="restriction_private_btn">Privé</button><button id="restriction_restrict_btn">Restrinct</button></label>
+			<label for="messages_allowed_btn">Autoriser les commentaires ? <button id="messages_allowed_btn">Non</button></label>
+			<label> Définir la restriction : <span id="restriction_span"></span> <button id="restriction_public_btn">Public</button> <button id="restriction_private_btn">Privé</button> <button id="restriction_restrict_btn">Restrinct</button></label>
 			<label for="friend_input_search">Inviter : <input id="friend_input_search" type="search"></label>
-			<label id="friend_search_result">"Résultat d'invitation"</label>
+			<ul id="friend_search_result"></ul>
+			<h4>Collaborateurs : </h4>
+			<ul id="album_collaborators"></ul>
 		</div>
 		<div id="container_album_photos">
-			<input type="search" id="search_photo" placeholder="Recherche photo">
+			<label for="search_photo">Ajouter une photo à l'album <input type="search" id="search_photo" placeholder="Recherche photo"></label>
 			<div id="photo_management"></div>
 			<div id="selected_photos"></div>
 		</div>

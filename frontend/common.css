@@ -8,7 +8,7 @@
 * {
 	margin: 0;
 	padding: 0;
-	background-color: var(--white_0);
+	background-color: #fff;
 	color: var(--black_0);
 
 	font-family: "Roboto", sans-serif;
@@ -50,4 +50,10 @@ header  h1{
 	display: flex;
 	justify-content: center;
 	align-items: center;
+}
+/* posts */
+.title_date {
+	display: flex;
+	flex-direction: row;
+	gap: 5px;
 }

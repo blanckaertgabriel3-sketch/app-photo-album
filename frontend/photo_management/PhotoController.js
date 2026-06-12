@@ -14,7 +14,7 @@ export default class PhotoController {
                 try {
                     this.view.msg_box.textContent = "Upload en cours...";
 
-                    const upload_response = await fetch("http://localhost:8000/rest/api/v1/upload.php", {
+                    const upload_response = await fetch("http://localhost:8000/rest/api/v1/photos.php?action=upload", {
                         method: "POST",
                         body: formData
                     });
@@ -39,7 +39,7 @@ export default class PhotoController {
                     }
                     // create photo
                     const creation_date = new Date().toISOString().slice(0, 19).replace("T", " ");
-                    const create_response = await fetch("http://localhost:8000/rest/api/v1/create_photo.php", {
+                    const create_response = await fetch("http://localhost:8000/rest/api/v1/photos.php?action=create", {
                         method: "POST",
                         body: JSON.stringify({
                             title: this.view.title_input.value,

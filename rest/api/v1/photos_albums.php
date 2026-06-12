@@ -14,7 +14,12 @@ $method = $_SERVER['REQUEST_METHOD'];
 
 switch ($method) {
 	case 'POST':
-		photos_albums($conn);
+		if($_GET["action"] === "photos_albums") {
+			photos_albums($conn);
+		}
+		elseif($_GET["action"] === "get_photos_albums") {
+			get_photos_albums($conn);
+		}
 		break;
 	
 	default:
@@ -24,19 +29,16 @@ switch ($method) {
 		break;
 }
 function photos_albums($conn) {
-
 	if (!isset($_SESSION["user_id"])) {
 		echo json_encode([
 			"message" => "Utilisateur non connecté"
 		]);
 		exit;
 	}
-
 	$query = "SELECT id FROM users WHERE id = :id";
 	$stmt = $conn->prepare($query);
 	$stmt->bindParam(":id", $_SESSION["user_id"]);
 	$stmt->execute();
-
 	if (!$stmt->fetch()) {
 		session_destroy();
 
@@ -45,6 +47,7 @@ function photos_albums($conn) {
 		]);
 		exit;
 	}
+
 	$data = json_decode(file_get_contents("php://input"), true);
 	if(!$data) {
 		echo json_encode([
@@ -87,5 +90,58 @@ function photos_albums($conn) {
 	}
 	echo json_encode([
 		"message" => "Les photos ont été ajoutée"
+	]);
+}
+function get_photos_albums($conn) {
+	if (!isset($_SESSION["user_id"])) {
+		echo json_encode([
+			"message" => "Utilisateur non connecté"
+		]);
+		exit;
+	}
+	$query = "SELECT id FROM users WHERE id = :id";
+	$stmt = $conn->prepare($query);
+	$stmt->bindParam(":id", $_SESSION["user_id"]);
+	$stmt->execute();
+	if (!$stmt->fetch()) {
+		session_destroy();
+
+		echo json_encode([
+			"message" => "Utilisateur non connecté"
+		]);
+		exit;
+	}
+
+	$data = json_decode(file_get_contents("php://input"),true);
+	if(!$data) {
+		json_encode([
+			"success" => false,
+			"message" => "Données invalide pour la récupération du contenu d'album"
+		]);
+		exit;
+	}
+	$album_id = $data["album_id"];
+	if(!isset($album_id)) {
+		json_encode([
+			"success" => false,
+			"message" => "album_id manquant, pour la récupération du contenu d'album"
+		]);
+		exit;
+	}
+	$query = "SELECT * FROM photos_albums WHERE album_id=:album_id";
+	$stmt = $conn->prepare($query);
+	$stmt->bindParam(":album_id", $album_id);
+	$success = $stmt->execute();
+	$photos_albums = $stmt->fetchAll(PDO::FETCH_ASSOC);
+	if(!$success) {
+		json_encode([
+			"success" => false,
+			"message" => "Échec de la récupération du contenu d'album"
+		]);
+	}
+	echo json_encode([
+		"success" => true,
+		"message" => "Composition de l'album trouvé",
+		"photos_albums" => $photos_albums
 	]);
 }

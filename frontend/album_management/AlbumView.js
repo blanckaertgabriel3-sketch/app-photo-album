@@ -8,11 +8,15 @@ export default class AlbumView {
 		this.hashtag_result = document.getElementById("hashtag_result");
 		this.messages_allowed = document.getElementById("messages_allowed");
 		this.messages_allowed_btn = document.getElementById("messages_allowed_btn");
+		// restriction album
+		this.restriction_span = document.getElementById("restriction_span");
 		this.restriction_public_btn = document.getElementById("restriction_public_btn");
 		this.restriction_private_btn = document.getElementById("restriction_private_btn");
 		this.restriction_restrict_btn = document.getElementById("restriction_restrict_btn");
+
 		this.friend_input_search = document.getElementById("friend_input_search");
 		this.friend_search_result = document.getElementById("friend_search_result");
+		this.album_collaborators = document.getElementById("album_collaborators");
 		this.creation_date_span = document.getElementById("creation_date_span");
 		// container_album_photos
 		this.search_photo = document.getElementById("search_photo");
@@ -109,5 +113,40 @@ export default class AlbumView {
 		this.hashtag_result.appendChild(newLi);
 
 		return newLi;
+	}
+	updateView(album_restriction) {
+		restriction_span.textContent = album_restriction;
+	}
+	createFriendElement(username) {
+		const newLi = document.createElement("li");
+		newLi.textContent = username;
+		this.friend_search_result.appendChild(newLi);
+
+		return newLi;
+	}
+	removeFriendElement() {
+		const childs = document.querySelectorAll("#friend_search_result > *").forEach(li => li.remove());
+	}
+	createCollaboratorsElement(username) {
+		const newLi = document.createElement("li");
+		const removeBtn = document.createElement("button");
+
+		newLi.textContent = username;
+
+		removeBtn.textContent = "X";
+		removeBtn.classList.add("collaborator_remove_btn");
+
+		newLi.appendChild(removeBtn);
+
+		this.album_collaborators.appendChild(newLi);
+
+		return removeBtn;
+	}
+	removeCollaboratorsElement(username) {
+		const childs = document.querySelectorAll("#album_collaborators > *").forEach(child => {
+			if(child.firstChild.textContent === username) {
+				child.remove();
+			}
+		});
 	}
 }

@@ -1,5 +1,5 @@
 <?php
-
+session_start();
 require "../../config/database.php";
 
 $db = new Database();
@@ -25,7 +25,7 @@ switch ($method) {
 }
 
 function create_album($conn) {
-	session_start();
+	
 	if (!isset($_SESSION["user_id"])) {
 		echo json_encode([
 			"message" => "Utilisateur non connecté"
@@ -60,6 +60,7 @@ function create_album($conn) {
 	$description = trim($data["description"]);
 	$creation_date = $data["creation_date"];
 	$messages_allowed = $data["messages_allowed"];
+	$restriction = $data["restriction"];
 
 	if(!isset($title) || $title === "") {
 		echo json_encode([
@@ -85,6 +86,12 @@ function create_album($conn) {
 		]);	
 		exit;
 	}
+	if(!isset($restriction)) {
+		echo json_encode([
+			"message" => "Restriction manquante"
+		]);	
+		exit;
+	}
 	//check if title already exist.
 	$query = "SELECT title FROM albums WHERE title=:title";
 	$stmt = $conn->prepare($query);
@@ -98,13 +105,14 @@ function create_album($conn) {
 		exit;
 	}
 	// create album.
-	$query = "INSERT INTO albums (title, owner_id, description, creation_date, messages_allowed) VALUES (:title, :owner_id, :description, :creation_date, :messages_allowed)";
+	$query = "INSERT INTO albums (title, owner_id, description, creation_date, messages_allowed, restriction) VALUES (:title, :owner_id, :description, :creation_date, :messages_allowed, :restriction)";
 	$stmt = $conn->prepare($query);
 	$stmt->bindParam(":title", $title);
 	$stmt->bindParam(":owner_id", $owner_id);
 	$stmt->bindParam(":description", $description);
 	$stmt->bindParam(":creation_date", $creation_date);
 	$stmt->bindParam(":messages_allowed", $messages_allowed);
+	$stmt->bindParam(":restriction", $restriction);
 	$success = $stmt->execute();
 	$album_id = $conn->lastInsertId();
 	if(!$success) {
@@ -121,38 +129,40 @@ function create_album($conn) {
 	]);
 }
 function get_albums($conn) {
-	session_start();
+	
 	if (!isset($_SESSION["user_id"])) {
 		echo json_encode([
+			"success" => false,
 			"message" => "Utilisateur non connecté"
 		]);
 		exit;
 	}
-
 	$query = "SELECT id FROM users WHERE id = :id";
 	$stmt = $conn->prepare($query);
 	$stmt->bindParam(":id", $_SESSION["user_id"]);
 	$stmt->execute();
-
 	if (!$stmt->fetch()) {
 		session_destroy();
-
 		echo json_encode([
+			"success" => false,
 			"message" => "Utilisateur non connecté"
 		]);
 		exit;
 	}
-	$query = "SELECT * FROM albums ORDER BY creation_date DESC";
+
+	$query = "SELECT * FROM albums WHERE restriction = 'public' ORDER BY creation_date DESC";
 	$stmt = $conn->prepare($query);
 	$success = $stmt->execute();
 	$albums = $stmt->fetchAll(PDO::FETCH_ASSOC);
 	if(!$success) {
 		echo json_encode([
+			"success" => false,
 			"message" => "Échec récupération des albums"
 		]);
 		exit;
 	}
 	echo json_encode([
+		"success" => true,
 		"message" => "Albums trouvés",
 		"albums" => $albums
 	], JSON_PRETTY_PRINT);
