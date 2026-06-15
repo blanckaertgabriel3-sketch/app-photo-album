@@ -1,29 +1,33 @@
 agenda 
 --------------------------------------------
 
-me 10 juin : 
-- Utilisation de la requête, albums_hashtags. Qui créée un lien entre un album et un hashtag.
+ve 12 juin : ø
 
-- Gestion album ERREUR HTTP : Il y a maintenant une vérification d'existance d'hashtag. Sinon il y avait une ERREUR HTTP.
-- L'utilisateur ne peut plus mettre 2 hashtags identique. Ce qui provoquait une erreur http, car c'est un élément unique dans la bdd.
-- Gestion album, Modification de route création album et du corp de la requête création d'album : Définition de la restriction ; public, privé, restrinct.
-- Création route recherche utilisateur pour la collaboration d'album.
-- Modification route, login et register sont maintenant des méthodes post.
-- Ajout barre de recherche qui permet de trouver noms d'utilisateurs, en vu de les ajouter comme collaborateurs de l'album. Ajout des noms d'utilisateurs dans une liste dynamique.
+sa 13 juin : 
+- conteneurisation frontend et backend
+di 14 juin : 
+- GROS PROBLèMES résolution en 2 jours :
+	- Le changement d'URL après Docker, avant je lançais php -S localhost:8000 à la racine du projet. Mais lors de la conteneurisation la racine backend n'étais plus la même, c'étais rest/ .
+	- l'erreur CORS : Le navigateur essayait encore d'appeler : http://localhost:8000/rest/api/v1/users.php mais cette URL n'existait plus. La page HTML ne contenait pas : Access-Control-Allow-Origin
+	- Le cache du navigateur : Le navigateur avait gardé une ancienne copie du fichier JS. Donc les routes qui avaient été modifiées n'était pas changé pour le navigateur, j'avais donc un échec constant d'exécution de requêtes.
+- le front et le back sont maintenant conteneurisé. Et il n'est plus nécessaire de faire php -S localhost:8000, car il y a Apache qui est installer et configurer dans le conteneur. 
 
-je 11 juin : 
-- Il est possible d'ajouter un collaborateur et de le supprimer d'un tableau, lors de la créatin de l'album. Quand l'utilisateur clique sur un résultat de la barre de recherche pour collaborateur, l'utilisateur est ajouté dans un tableau. 
-Ajout dynamique d'élements sous forme de liste pour les résultats de la barre de recherche et les collaborateurs ajoutés à l'album. 
-- Création de route api : get albums retourne toutes les info des albums qui sont public, ordoné de maniére ascendante ; get photos_albums retourne toutes les photos dans l'album ; get_photo retourne la photo correspondant à un photo_id.
-- Changement position fonctions concernant les photos : upload.php, create_photo.php et search_photo.php dans un fichier photos.php
-- Suppression de la ligne session_start() qui était dupliqué dans tous les fichiers .php, par un seul démarage de la session en tête de fichier.
+
+
 
 à faire
 --------------------------------------------
-connexion 
+Les src des balises img ne sont plus bonnes, responsable : Docker;
+
+
 
 utilisation de createPostElement dans la page home.
 
+
+--------
+redirection page home, si pas connecté redirection formulaire.
+dockerfile.
+------
 
 
 

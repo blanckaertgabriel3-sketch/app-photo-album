@@ -18,12 +18,11 @@ export default class HomeView {
 		const post = document.createElement("div");
 		post.classList.add("post");
 
-		// Image
+		// Photo
 		const img = document.createElement("img");
 		img.src = imgSrc;
 		img.alt = "Img utilisateur";
 
-		// Titre + date
 		const titleDate = document.createElement("div");
 		titleDate.classList.add("title_date");
 
@@ -57,7 +56,6 @@ export default class HomeView {
 		descriptionP.classList.add("description");
 		descriptionP.textContent = description;
 
-		// Bouton lire la suite
 		const readMoreBtn = document.createElement("button");
 		readMoreBtn.classList.add("read_more");
 		readMoreBtn.textContent = "Lire la suite";
@@ -85,8 +83,6 @@ export default class HomeView {
 			li.appendChild(a);
 			interactionsUl.appendChild(li);
 		});
-
-		// Construction du post
 		post.appendChild(img);
 		post.appendChild(titleDate);
 		post.appendChild(hashtagsUl);
@@ -94,7 +90,6 @@ export default class HomeView {
 		post.appendChild(readMoreBtn);
 		post.appendChild(interactionsUl);
 
-		// Ajout au conteneur
 		this.posts_container.appendChild(post);
 
 		return post;

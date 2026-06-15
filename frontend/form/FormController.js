@@ -6,7 +6,7 @@ export default class FormController {
 		localStorage.clear();
 		this.view.form_validate_btn.addEventListener("click", async () => {
 			try {
-				const response = await fetch (`http://localhost:8000/rest/api/v1/users.php?action=login`, {
+				const response = await fetch (`http://localhost:8000/api/v1/users.php?action=login`, {
 					method: "POST",
 					credentials: "include",
 					headers: {

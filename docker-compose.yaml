@@ -1,18 +1,41 @@
 services:
-  db:
-    container_name: album_db
+  frontend:
+    build: ./frontend
+    container_name: album_frontend
+    ports:
+      - "3000:80"
+    volumes:
+      - ./frontend:/usr/share/nginx/html
+  api:
+    build: ./rest
+    container_name: album_api
+    ports:
+      - "8000:80"
+    volumes:
+    - ./rest:/var/www/html
+    - ./.env:/var/www/.env
     env_file:
       - .env
+    depends_on:
+      - db
+
+  db:
+    container_name: album_db
     image: mysql
     restart: always
+    env_file:
+      - .env
     ports:
-      - 3306:3306
-    volumes: 
+      - "3306:3306"
+    volumes:
       - ./seed:/docker-entrypoint-initdb.d
+
   phpmyadmin:
     image: phpmyadmin
     restart: always
-    ports:
-      - 8080:80
     env_file:
       - .env
+    ports:
+      - "8080:80"
+    depends_on:
+      - db
