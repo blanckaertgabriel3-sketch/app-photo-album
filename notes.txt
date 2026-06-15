@@ -6,7 +6,7 @@ ve 12 juin : ø
 sa 13 juin : 
 - conteneurisation frontend et backend
 di 14 juin : 
-- GROS PROBLèMES résolution en 2 jours :
+- GROS PROBLèMES résolut en 2 jours :
 	- Le changement d'URL après Docker, avant je lançais php -S localhost:8000 à la racine du projet. Mais lors de la conteneurisation la racine backend n'étais plus la même, c'étais rest/ .
 	- l'erreur CORS : Le navigateur essayait encore d'appeler : http://localhost:8000/rest/api/v1/users.php mais cette URL n'existait plus. La page HTML ne contenait pas : Access-Control-Allow-Origin
 	- Le cache du navigateur : Le navigateur avait gardé une ancienne copie du fichier JS. Donc les routes qui avaient été modifiées n'était pas changé pour le navigateur, j'avais donc un échec constant d'exécution de requêtes.
