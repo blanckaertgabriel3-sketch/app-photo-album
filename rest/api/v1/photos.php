@@ -202,7 +202,7 @@ function upload ($conn) {
 		echo json_encode([
 			"success" => true,
 			"message" => "Upload réussi",
-			"targetPath" => "../../rest/api/v1/uploads/" . $filename
+			"targetPath" => "../../api/v1/uploads/" . $filename
 		]);
 	}else {
 		echo json_encode([

@@ -12,6 +12,8 @@ di 14 juin :
 	- Le cache du navigateur : Le navigateur avait gardé une ancienne copie du fichier JS. Donc les routes qui avaient été modifiées n'était pas changé pour le navigateur, j'avais donc un échec constant d'exécution de requêtes.
 - le front et le back sont maintenant conteneurisé. Et il n'est plus nécessaire de faire php -S localhost:8000, car il y a Apache qui est installer et configurer dans le conteneur. 
 
+lu 15 juin : 
+- Réalisation j'ai supprimé la base de donnée à cause de la commande docker compose down.
 
 
 
@@ -19,6 +21,7 @@ di 14 juin :
 --------------------------------------------
 Les src des balises img ne sont plus bonnes, responsable : Docker;
 
+fichier index.php qui charge toutes les pages.
 
 
 utilisation de createPostElement dans la page home.
