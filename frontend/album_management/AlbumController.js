@@ -15,7 +15,7 @@ export default class AlbumController {
 			const letters = this.view.search_photo.value;
 			try {
 				this.view.removeImgElement();
-				const search_response = await fetch ("http://localhost:8000/api/v1/photos.php?action=search", {
+				const search_response = await fetch ("http://localhost:8000/rest/api/v1/photos.php?action=search", {
 					method: "POST",
 					body: JSON.stringify({
 						letters: letters
@@ -65,7 +65,7 @@ export default class AlbumController {
 				return;
 			}
 			try {
-				const search_response = await fetch ("http://localhost:8000/api/v1/users.php?action=search_users", {
+				const search_response = await fetch ("http://localhost:8000/rest/api/v1/users.php?action=search_users", {
 					method: "POST",
 					body: JSON.stringify({
 						letters: letters
@@ -110,7 +110,7 @@ export default class AlbumController {
 			const creation_date = new Date().toISOString().slice(0, 19).replace("T", " ");
 			try {
 				//create_album
-				const create_response = await fetch("http://localhost:8000/api/v1/albums.php?action=create_album", {
+				const create_response = await fetch("http://localhost:8000/rest/api/v1/albums.php?action=create_album", {
 					method: "POST",
 					body: JSON.stringify({
 						title: this.view.title_input.value,
@@ -139,7 +139,7 @@ export default class AlbumController {
 					console.log("Aucune photo dans l'album");
 				}
 				this.album_photos.forEach(async (photos, index) => {
-					const photos_album_response = await fetch("http://localhost:8000/api/v1/photos_albums.php?action=photos_albums", {
+					const photos_album_response = await fetch("http://localhost:8000/rest/api/v1/photos_albums.php?action=photos_albums", {
 						method: "POST",
 						body: JSON.stringify({
 							photo_id: photos.id,
@@ -160,7 +160,7 @@ export default class AlbumController {
 					console.log("Aucun hashtag dans l'album");
 				}
 				this.album_hashtags.forEach(async (hashtag) => {
-					const create_hashtag_response = await fetch ("http://localhost:8000/api/v1/hashtags.php?action=create_hashtag", {
+					const create_hashtag_response = await fetch ("http://localhost:8000/rest/api/v1/hashtags.php?action=create_hashtag", {
 						method: "POST",
 						body: JSON.stringify({
 							name: hashtag
@@ -178,7 +178,7 @@ export default class AlbumController {
 					}
 
 					// albums_hashtags
-					const albums_hashtags_response = await fetch ("http://localhost:8000/api/v1/albums_hashtags.php?action=albums_hashtags", {
+					const albums_hashtags_response = await fetch ("http://localhost:8000/rest/api/v1/albums_hashtags.php?action=albums_hashtags", {
 						method: "POST",
 						body: JSON.stringify({
 							hashtag_id: create_hashtag_result.hashtag_id,

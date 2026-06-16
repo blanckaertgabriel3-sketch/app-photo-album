@@ -14,7 +14,7 @@ export default class PhotoController {
                 try {
                     this.view.msg_box.textContent = "Upload en cours...";
 
-                    const upload_response = await fetch("http://localhost:8000/api/v1/photos.php?action=upload", {
+                    const upload_response = await fetch("http://localhost:8000/rest/api/v1/photos.php?action=upload", {
                         method: "POST",
                         body: formData
                     });
@@ -39,14 +39,13 @@ export default class PhotoController {
                     }
                     // create photo
                     const creation_date = new Date().toISOString().slice(0, 19).replace("T", " ");
-                    const create_response = await fetch("http://localhost:8000/api/v1/photos.php?action=create", {
+                    const create_response = await fetch("http://localhost:8000/rest/api/v1/photos.php?action=create", {
                         method: "POST",
                         body: JSON.stringify({
                             title: this.view.title_input.value,
                             description: this.view.description_photo.value,
                             file_directory: upload_result.targetPath,
                             import_date: creation_date,
-                            hashtag: "mlfqsfsfdjfmlqs",
                             messages_allowed: 0
                         })
                     });

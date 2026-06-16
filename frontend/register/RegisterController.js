@@ -9,7 +9,7 @@ export default class RegisterController {
 		this.view.register_form_validate_btn.addEventListener("click", async () => {
 			try {
 				const response = await fetch(
-					"http://localhost:8000/api/v1/users.php?action=register",
+					"http://localhost:8000/rest/api/v1/users.php?action=register",
 					{
 						method: "POST",
 						headers: {

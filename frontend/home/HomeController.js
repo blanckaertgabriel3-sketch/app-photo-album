@@ -15,7 +15,7 @@ export default class HomeController {
 	async getUser() {
 		try {
 			const response = await fetch(
-				"http://localhost:8000/api/v1/users.php?action=getUser",
+				"http://localhost:8000/rest/api/v1/users.php?action=getUser",
 				{
 					method: "POST",
 					credentials: "include"
@@ -23,6 +23,7 @@ export default class HomeController {
 			);
 			if (!response.ok) {
 				throw new Error("Erreur HTTP");
+				return;
 			}
 
 			const result = await response.json();

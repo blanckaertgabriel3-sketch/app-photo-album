@@ -7,8 +7,8 @@ logout_btn.addEventListener("click", async() => {
 			return;
 		}
 		msg_box.textContent = "Déconnexion ...";
-
-		const response = await fetch ("http://localhost:8000/api/v1/logout.php", {
+		
+		const response = await fetch ("http://localhost:8000/rest/api/v1/logout.php", {
 			method: "POST",
 			credentials: "include"
 		})
@@ -17,6 +17,7 @@ logout_btn.addEventListener("click", async() => {
 			return;
 		}
 		
+		msg_box.textContent = "Déconnecté ...";
 		document.location.href = "../form/form.html";
 	}
 	catch(error) {

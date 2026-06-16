@@ -65,8 +65,7 @@ function create_photo($conn) {
 	$user_id = $_SESSION["user_id"];
 	$title = trim($data["title"]);
 	$description = $data["description"];
-	$file_directory = $data["file_directory"];	
-	$hashtag = $data["hashtag"];
+	$file_directory = $data["file_directory"];
 	$import_date = $data["import_date"];
 	$messages_allowed = $data["messages_allowed"];
 	if (!isset($file_directory)) {
@@ -95,13 +94,6 @@ function create_photo($conn) {
 		]);
     	exit;
 	}
-	if (!isset($hashtag)) {
-    	echo json_encode([
-			"success" => false, 
-			"message" => "Hashtag manquant"
-		]);
-    	exit;
-	}
 	if (!isset($messages_allowed)) {
     	echo json_encode([
 			"success" => false, 
@@ -123,13 +115,12 @@ function create_photo($conn) {
 		exit;
 	}
 	//create photo.
-	$query = "INSERT INTO photos (user_id, title, description, file_directory, hashtag, import_date, messages_allowed) VALUES (:user_id, :title, :description, :file_directory, :hashtag, :import_date, :messages_allowed)";
+	$query = "INSERT INTO photos (user_id, title, description, file_directory, import_date, messages_allowed) VALUES (:user_id, :title, :description, :file_directory, :import_date, :messages_allowed)";
 	$stmt = $conn->prepare($query);
 	$stmt->bindParam(":user_id", $user_id);
 	$stmt->bindParam(":title", $title);
 	$stmt->bindParam(":description", $description);
 	$stmt->bindParam(":file_directory", $file_directory);
-	$stmt->bindParam(":hashtag", $hashtag);
 	$stmt->bindParam(":import_date", $import_date);
 	$stmt->bindParam(":messages_allowed", $messages_allowed);
 	$success = $stmt->execute();
@@ -202,7 +193,7 @@ function upload ($conn) {
 		echo json_encode([
 			"success" => true,
 			"message" => "Upload réussi",
-			"targetPath" => "../../api/v1/uploads/" . $filename
+			"targetPath" => "../../rest/api/v1/uploads/" . $filename
 		]);
 	}else {
 		echo json_encode([
