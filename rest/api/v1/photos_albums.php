@@ -1,12 +1,10 @@
 <?php
 session_start();
 
-header("Access-Control-Allow-Origin: *");
-header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
-header("Access-Control-Allow-Headers: Content-Type, Authorization");
-header("Content-Type: application/json");
-
+require "../../config/header.php";
 require "../../config/database.php";
+require "../../middleware/auth.php";
+
 $db = new Database();
 $conn = $db->getConnection();
 
@@ -29,24 +27,8 @@ switch ($method) {
 		break;
 }
 function photos_albums($conn) {
-	if (!isset($_SESSION["user_id"])) {
-		echo json_encode([
-			"message" => "Utilisateur non connecté"
-		]);
-		exit;
-	}
-	$query = "SELECT id FROM users WHERE id = :id";
-	$stmt = $conn->prepare($query);
-	$stmt->bindParam(":id", $_SESSION["user_id"]);
-	$stmt->execute();
-	if (!$stmt->fetch()) {
-		session_destroy();
 
-		echo json_encode([
-			"message" => "Utilisateur non connecté"
-		]);
-		exit;
-	}
+	requireAuth();
 
 	$data = json_decode(file_get_contents("php://input"), true);
 	if(!$data) {
@@ -93,24 +75,8 @@ function photos_albums($conn) {
 	]);
 }
 function get_photos_albums($conn) {
-	if (!isset($_SESSION["user_id"])) {
-		echo json_encode([
-			"message" => "Utilisateur non connecté"
-		]);
-		exit;
-	}
-	$query = "SELECT id FROM users WHERE id = :id";
-	$stmt = $conn->prepare($query);
-	$stmt->bindParam(":id", $_SESSION["user_id"]);
-	$stmt->execute();
-	if (!$stmt->fetch()) {
-		session_destroy();
 
-		echo json_encode([
-			"message" => "Utilisateur non connecté"
-		]);
-		exit;
-	}
+	requireAuth();
 
 	$data = json_decode(file_get_contents("php://input"),true);
 	if(!$data) {
@@ -132,13 +98,13 @@ function get_photos_albums($conn) {
 	$stmt = $conn->prepare($query);
 	$stmt->bindParam(":album_id", $album_id);
 	$success = $stmt->execute();
-	$photos_albums = $stmt->fetchAll(PDO::FETCH_ASSOC);
 	if(!$success) {
 		json_encode([
 			"success" => false,
 			"message" => "Échec de la récupération du contenu d'album"
 		]);
 	}
+	$photos_albums = $stmt->fetchAll(PDO::FETCH_ASSOC);
 	echo json_encode([
 		"success" => true,
 		"message" => "Composition de l'album trouvé",

@@ -52,8 +52,45 @@ header  h1{
 	align-items: center;
 }
 /* posts */
-.title_date {
+.post_infos,
+.hashtags_container,
+.description_container {
+	margin-top: 12px;
+}
+
+.post_infos {
 	display: flex;
-	flex-direction: row;
+	flex-direction: column;
 	gap: 5px;
+}
+
+.title_container strong,
+.date_container strong,
+.hashtags_container strong,
+.description_container strong {
+	display: block;
+	margin-bottom: 5px;
+	font-size: 0.9rem;
+	text-transform: uppercase;
+	opacity: 0.7;
+}
+
+.hashtags {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+
+.hashtags li {
+	padding: 4px 8px;
+	border-radius: 20px;
+	background: #eee;
+}
+
+.description {
+	margin: 0;
+	line-height: 1.5;
 }

@@ -1,12 +1,9 @@
 <?php
 session_start();
 
-header("Access-Control-Allow-Origin: *");
-header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
-header("Access-Control-Allow-Headers: Content-Type, Authorization");
-header("Content-Type: application/json");
-
+require "../../config/header.php";
 require "../../config/database.php";
+require "../../middleware/auth.php";
 
 $db = new Database();
 $conn = $db->getConnection();
@@ -35,26 +32,8 @@ switch ($method) {
 
 function create_photo($conn) {
 	
-	if (!isset($_SESSION["user_id"])) {
-		echo json_encode([
-			"message" => "Utilisateur non connecté"
-		]);
-		exit;
-	}
+	$user_id = requireAuth();;
 
-	$query = "SELECT id FROM users WHERE id = :id";
-	$stmt = $conn->prepare($query);
-	$stmt->bindParam(":id", $_SESSION["user_id"]);
-	$stmt->execute();
-
-	if (!$stmt->fetch()) {
-		session_destroy();
-
-		echo json_encode([
-			"message" => "Utilisateur non connecté"
-		]);
-		exit;
-	}	
 	$data = json_decode(file_get_contents("php://input"),true);
 	if(!$data) {
 		echo json_encode([
@@ -62,7 +41,6 @@ function create_photo($conn) {
 		]);
 		exit;
 	}
-	$user_id = $_SESSION["user_id"];
 	$title = trim($data["title"]);
 	$description = $data["description"];
 	$file_directory = $data["file_directory"];
@@ -124,7 +102,6 @@ function create_photo($conn) {
 	$stmt->bindParam(":import_date", $import_date);
 	$stmt->bindParam(":messages_allowed", $messages_allowed);
 	$success = $stmt->execute();
-	
 	if(!$success) {
 		echo json_encode([
 			"success" => false,
@@ -139,25 +116,7 @@ function create_photo($conn) {
 }
 function upload ($conn) {
 	
-	if (!isset($_SESSION["user_id"])) {
-		echo json_encode([
-			"message" => "Utilisateur non connecté"
-		]);
-		exit;
-	}
-	$query = "SELECT id FROM users WHERE id = :id";
-	$stmt = $conn->prepare($query);
-	$stmt->bindParam(":id", $_SESSION["user_id"]);
-	$stmt->execute();
-
-	if (!$stmt->fetch()) {
-		session_destroy();
-
-		echo json_encode([
-			"message" => "Utilisateur non connecté"
-		]);
-		exit;
-	}
+	requireAuth();
 
 	$allowed_size = 500000;
 	$file = $_FILES['file'];
@@ -203,23 +162,7 @@ function upload ($conn) {
 	}
 }
 function search_photo($conn) {
-	if (!isset($_SESSION["user_id"])) {
-		echo json_encode([
-			"message" => "Utilisateur non connecté"
-		]);
-		exit;
-	}
-	$query = "SELECT id FROM users WHERE id = :id";
-	$stmt = $conn->prepare($query);
-	$stmt->bindParam(":id", $_SESSION["user_id"]);
-	$stmt->execute();
-	if (!$stmt->fetch()) {
-		session_destroy();
-		echo json_encode([
-			"message" => "Utilisateur non connecté"
-		]);
-		exit;
-	}
+	requireAuth();
 	
 	$data = json_decode(file_get_contents("php://input"), true);
 	$letters = $data["letters"];
@@ -242,7 +185,6 @@ function search_photo($conn) {
 	$stmt = $conn->prepare($query);
 	$stmt->bindParam(":search", $search);
 	$success = $stmt->execute();
-	$photos = $stmt->fetchAll(PDO::FETCH_ASSOC);
 	if(!$success) {
 		echo json_encode([
 			"success" => false,
@@ -250,6 +192,7 @@ function search_photo($conn) {
 		]);
 		exit;
 	}
+	$photos = $stmt->fetchAll(PDO::FETCH_ASSOC);
 	if (empty($photos)) {
 		echo json_encode([
 			"success" => false,
@@ -264,23 +207,7 @@ function search_photo($conn) {
 	], JSON_PRETTY_PRINT);
 }
 function get_photo($conn) {
-	if (!isset($_SESSION["user_id"])) {
-		echo json_encode([
-			"message" => "Utilisateur non connecté"
-		]);
-		exit;
-	}
-	$query = "SELECT id FROM users WHERE id = :id";
-	$stmt = $conn->prepare($query);
-	$stmt->bindParam(":id", $_SESSION["user_id"]);
-	$stmt->execute();
-	if (!$stmt->fetch()) {
-		session_destroy();
-		echo json_encode([
-			"message" => "Utilisateur non connecté"
-		]);
-		exit;
-	}
+	requireAuth();
 	
 	$data = json_decode(file_get_contents("php://input"), true);
 	if(!$data) {
@@ -302,7 +229,6 @@ function get_photo($conn) {
 	$stmt = $conn->prepare($query);
 	$stmt->bindParam(":photo_id", $photo_id);
 	$success = $stmt->execute();
-	$photo = $stmt->fetch(PDO::FETCH_ASSOC);
 	if(!$success) {
 		echo json_encode([
 			"success" => false,
@@ -310,6 +236,7 @@ function get_photo($conn) {
 		]);
 		exit;
 	}
+	$photo = $stmt->fetch(PDO::FETCH_ASSOC);
 	echo json_encode([
 		"success" => true,
 		"message" => "Photo trouvée",

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : db
--- Généré le : lun. 15 juin 2026 à 12:45
+-- Généré le : mar. 16 juin 2026 à 15:33
 -- Version du serveur : 9.4.0
 -- Version de PHP : 8.2.29
 
@@ -37,6 +37,14 @@ CREATE TABLE `albums` (
   `restriction` enum('private','public','restrict') NOT NULL DEFAULT 'private'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+--
+-- Déchargement des données de la table `albums`
+--
+
+INSERT INTO `albums` (`id`, `owner_id`, `title`, `description`, `creation_date`, `messages_allowed`, `restriction`) VALUES
+(1, 1, 'a', 'a', '2026-06-16 09:01:31', 1, 'public'),
+(2, 1, 'ab', 'ab', '2026-06-16 09:03:17', 1, 'public');
+
 -- --------------------------------------------------------
 
 --
@@ -58,6 +66,14 @@ CREATE TABLE `albums_hashtags` (
   `album_id` int NOT NULL,
   `hashtag_id` int NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Déchargement des données de la table `albums_hashtags`
+--
+
+INSERT INTO `albums_hashtags` (`album_id`, `hashtag_id`) VALUES
+(1, 1),
+(2, 2);
 
 -- --------------------------------------------------------
 
@@ -136,6 +152,14 @@ CREATE TABLE `hashtags` (
   `name` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+--
+-- Déchargement des données de la table `hashtags`
+--
+
+INSERT INTO `hashtags` (`id`, `name`) VALUES
+(1, 'a'),
+(2, 'ab');
+
 -- --------------------------------------------------------
 
 --
@@ -167,6 +191,14 @@ CREATE TABLE `photos` (
   `restriction` enum('private','public','restrict') NOT NULL DEFAULT 'private'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+--
+-- Déchargement des données de la table `photos`
+--
+
+INSERT INTO `photos` (`id`, `user_id`, `title`, `description`, `file_directory`, `import_date`, `messages_allowed`, `restriction`) VALUES
+(1, 1, 'parfung', 'q', '../../rest/api/v1/uploads/1781598298_6a31085ad8a2c_8603.jpg', '2026-06-16 08:24:59', 0, 'private'),
+(2, 1, 'goatmilk', 'mm', '../../rest/api/v1/uploads/1781598367_6a31089fd776a_9674.jpg', '2026-06-16 08:26:08', 0, 'private');
+
 -- --------------------------------------------------------
 
 --
@@ -177,6 +209,25 @@ CREATE TABLE `photos_albums` (
   `photo_id` int NOT NULL,
   `album_id` int NOT NULL,
   `display_order` int DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Déchargement des données de la table `photos_albums`
+--
+
+INSERT INTO `photos_albums` (`photo_id`, `album_id`, `display_order`) VALUES
+(1, 1, 0),
+(2, 1, 1);
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `photos_hashtags`
+--
+
+CREATE TABLE `photos_hashtags` (
+  `photo_id` int NOT NULL,
+  `hashtag_id` int NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
@@ -202,6 +253,13 @@ CREATE TABLE `users` (
   `password` varchar(255) NOT NULL,
   `profile_description` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Déchargement des données de la table `users`
+--
+
+INSERT INTO `users` (`id`, `name`, `password`, `profile_description`) VALUES
+(1, 'a', '$2y$10$gaglSEII/0u6mGF9oJ8VAuitSYbNK1O4mZ1QJMKB6kebFq6B9a3TO', NULL);
 
 -- --------------------------------------------------------
 
@@ -312,6 +370,13 @@ ALTER TABLE `photos_albums`
   ADD KEY `album_id` (`album_id`);
 
 --
+-- Index pour la table `photos_hashtags`
+--
+ALTER TABLE `photos_hashtags`
+  ADD PRIMARY KEY (`photo_id`,`hashtag_id`),
+  ADD KEY `hashtag_id` (`hashtag_id`);
+
+--
 -- Index pour la table `photos_messages`
 --
 ALTER TABLE `photos_messages`
@@ -339,13 +404,13 @@ ALTER TABLE `user_groups`
 -- AUTO_INCREMENT pour la table `albums`
 --
 ALTER TABLE `albums`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT pour la table `hashtags`
 --
 ALTER TABLE `hashtags`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT pour la table `messages`
@@ -357,13 +422,13 @@ ALTER TABLE `messages`
 -- AUTO_INCREMENT pour la table `photos`
 --
 ALTER TABLE `photos`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT pour la table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT pour la table `user_groups`
@@ -455,6 +520,13 @@ ALTER TABLE `photos`
 ALTER TABLE `photos_albums`
   ADD CONSTRAINT `photos_albums_ibfk_1` FOREIGN KEY (`photo_id`) REFERENCES `photos` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `photos_albums_ibfk_2` FOREIGN KEY (`album_id`) REFERENCES `albums` (`id`) ON DELETE CASCADE;
+
+--
+-- Contraintes pour la table `photos_hashtags`
+--
+ALTER TABLE `photos_hashtags`
+  ADD CONSTRAINT `photos_hashtags_ibfk_1` FOREIGN KEY (`photo_id`) REFERENCES `photos` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `photos_hashtags_ibfk_2` FOREIGN KEY (`hashtag_id`) REFERENCES `hashtags` (`id`) ON DELETE CASCADE;
 
 --
 -- Contraintes pour la table `photos_messages`

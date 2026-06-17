@@ -1,22 +1,42 @@
 agenda 
 --------------------------------------------
+ma 16 juin : 
+- Requête get_album_full : retourne le contenu de chaque photos, de tous les albums qui à ont une restriction public.
+
+me 17 juin : 
+- Route api : create_message, compléter la table message avec une méthode post.
+- Route api : get_message, récupérer un message avec une méthode post.
+- Utilisation de route : get_album_full, pour créer dynamiquement des éléments posts dans la page home.
+
+
 
 à faire
 --------------------------------------------
+connexion 
+	albums : get_album_full
 
+- Requête get_album_full :
+	get albums_hashtags
+
+dans users.php, lors des fetch il manque les $success. Pour la vérification d'échec.
+
+utiliser la requête get_album_full dans homeController.
+
+
+
+si l'album est privé on ne doit pas pouvoir inviter de collaborateurs.
+
+get user qui ne gére pas quand l'utilisateur n'est pas connecté.
+redirection page home, si pas connecté redirection formulaire.
+
+
+
+
+
+
+console.log : album_controller l: 98,139, 199 et 200
 
 fichier index.php qui charge toutes les pages.
-
-
-utilisation de createPostElement dans la page home.
-
-
---------
-redirection page home, si pas connecté redirection formulaire.
-dockerfile.
-------
-
-
 
 - Gestion album : Imposer une limite charactères pour hashtags.
 

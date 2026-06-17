@@ -21,6 +21,10 @@ export default class AlbumController {
 						letters: letters
 					})
 				});
+				if (search_response.status === 401) {
+					window.location.href = "../form/form.html";
+					return;
+				}
 				if(!search_response.ok) {
 					this.view.msg_box.textContent = "Erreur HTTP";
 					return;
@@ -71,6 +75,10 @@ export default class AlbumController {
 						letters: letters
 					})
 				});
+				if (search_response.status === 401) {
+					window.location.href = "../form/form.html";
+					return;
+				}
 				if(!search_response.ok) {
 					this.view.msg_box.textContent = "Erreur HTTP";
 					return;
@@ -120,6 +128,10 @@ export default class AlbumController {
 						restriction: this.restriction
 					})
 				});
+				if (create_response.status === 401) {
+					window.location.href = "../form/form.html";
+					return;
+				}
 				if(!create_response.ok) {
 					this.view.msg_box.textContent = "Erreur HTTP";
 					return;
@@ -147,6 +159,10 @@ export default class AlbumController {
 							display_order: index
 						})
 					});
+					if (photos_album_response.status === 401) {
+						window.location.href = "../form/form.html";
+						return;
+					}
 					if(!photos_album_response.ok) {
 						this.view.msg_box.textContent = "Erreur HTTP";
 						return;
@@ -166,6 +182,10 @@ export default class AlbumController {
 							name: hashtag
 						})
 					});
+					if (create_hashtag_response.status === 401) {
+						window.location.href = "../form/form.html";
+						return;
+					}
 					if(!create_hashtag_response.ok) {
 						this.view.msg_box.textContent = "Erreur HTTP";
 						return;
@@ -185,6 +205,10 @@ export default class AlbumController {
 							album_id: create_result.album_id
 						})
 					});
+					if (albums_hashtags_response.status === 401) {
+						window.location.href = "../form/form.html";
+						return;
+					}
 					if(!albums_hashtags_response.ok) {
 						this.view.msg_box.textContent = "Erreur HTTP";
 						return;

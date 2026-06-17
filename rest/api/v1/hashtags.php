@@ -1,7 +1,9 @@
 <?php
 session_start();
 
+require "../../config/header.php";
 require "../../config/database.php";
+require "../../middleware/auth.php";
 
 $db = new Database();
 $conn = $db->getConnection();
@@ -24,25 +26,8 @@ switch ($method) {
 		break;
 }
 function create_hashtag($conn) {
-	// 
-	// if (!isset($_SESSION["user_id"])) {
-	// 	echo json_encode([
-	// 		"message" => "Utilisateur non connecté"
-	// 	]);
-	// 	exit;
-	// }
-	// $query = "SELECT id FROM users WHERE id = :id";
-	// $stmt = $conn->prepare($query);
-	// $stmt->bindParam(":id", $_SESSION["user_id"]);
-	// $stmt->execute();
-	// if (!$stmt->fetch()) {
-	// 	session_destroy();
-
-	// 	echo json_encode([
-	// 		"message" => "Utilisateur non connecté"
-	// 	]);
-	// 	exit;
-	// }
+	
+	requireAuth();
 	
 	// get hashtag if exist
 	$data = json_decode(file_get_contents("php://input"), true);
@@ -100,24 +85,7 @@ function create_hashtag($conn) {
 }
 function get_hashtag($conn) {
 	
-	if (!isset($_SESSION["user_id"])) {
-		echo json_encode([
-			"message" => "Utilisateur non connecté"
-		]);
-		exit;
-	}
-	$query = "SELECT id FROM users WHERE id = :id";
-	$stmt = $conn->prepare($query);
-	$stmt->bindParam(":id", $_SESSION["user_id"]);
-	$stmt->execute();
-	if (!$stmt->fetch()) {
-		session_destroy();
-
-		echo json_encode([
-			"message" => "Utilisateur non connecté"
-		]);
-		exit;
-	}
+	requireAuth();
 
 	$data = json_decode(file_get_contents("php://input"), true);
 	if(!$data) {

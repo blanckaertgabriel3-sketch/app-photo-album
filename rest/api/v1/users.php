@@ -1,26 +1,9 @@
 <?php
 session_start();
 
-header("Access-Control-Allow-Origin: http://localhost:8000");
-header("Access-Control-Allow-Credentials: true");
-header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
-header("Access-Control-Allow-Headers: Content-Type, Authorization");
-
-
-// // header("Access-Control-Allow-Origin: *");
-// header("Access-Control-Allow-Origin: http://localhost");
-// header("Access-Control-Allow-Credentials: true");
-
-// header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
-// header("Access-Control-Allow-Headers: Content-Type, Authorization");
-// header("Content-Type: application/json");
-
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    http_response_code(200);
-    exit();
-}
-
+require "../../config/header.php";
 require "../../config/database.php";
+require "../../middleware/auth.php";
 
 $db = new Database();
 $conn = $db->getConnection();
@@ -54,23 +37,7 @@ switch ($method) {
 }
 function search_users($conn) {
 	
-	if (!isset($_SESSION["user_id"])) {
-		echo json_encode([
-			"message" => "Utilisateur non connecté"
-		]);
-		exit;
-	}
-	$query = "SELECT id FROM users WHERE id = :id";
-	$stmt = $conn->prepare($query);
-	$stmt->bindParam(":id", $_SESSION["user_id"]);
-	$stmt->execute();
-	if (!$stmt->fetch()) {
-		session_destroy();
-		echo json_encode([
-			"message" => "Utilisateur non connecté"
-		]);
-		exit;
-	}
+	requireAuth();
 	
 	$data = json_decode(file_get_contents("php://input"), true);
 	if(!$data) {
@@ -99,7 +66,6 @@ function search_users($conn) {
 	$stmt = $conn->prepare($query);
 	$stmt->bindParam(":search", $search);
 	$success = $stmt->execute();
-	$users = $stmt->fetchAll(PDO::FETCH_ASSOC);
 	if(!$success) {
 		echo json_encode([
 			"success" => false,
@@ -107,6 +73,7 @@ function search_users($conn) {
 		]);
 		exit;
 	}
+	$users = $stmt->fetchAll(PDO::FETCH_ASSOC);
 	if (empty($users)) {
 		echo json_encode([
 			"success" => false,
@@ -120,36 +87,9 @@ function search_users($conn) {
 		"users_result" => $users
 	], JSON_PRETTY_PRINT);
 }
-function getUser($conn) {
-	
-	if (!isset($_SESSION["user_id"])) {
-		echo json_encode([
-			"message" => "Utilisateur non connecté"
-		]);
-		exit;
-	}
+function getUser($conn) {	
+	$user_id = requireAuth();
 
-	$query = "SELECT id FROM users WHERE id = :id";
-	$stmt = $conn->prepare($query);
-	$stmt->bindParam(":id", $_SESSION["user_id"]);
-	$stmt->execute();
-
-	if (!$stmt->fetch()) {
-		session_destroy();
-
-		echo json_encode([
-			"message" => "Utilisateur non connecté"
-		]);
-		exit;
-	}
-	$user_id = $_SESSION['user_id'];
-	if(!$user_id) {
-		echo json_encode([
-			"success" => false,
-			"message" => "Cookie utilisateur non trouvé"
-		]);
-		return;
-	}
 	$query = "SELECT * FROM users WHERE id=:user_id";
 	$stmt = $conn->prepare($query);
 	$stmt->bindParam(":user_id", $user_id);
@@ -160,7 +100,7 @@ function getUser($conn) {
 			"success" => false,
 			"message" => "Utilisateur non trouvé"
 		]);
-		return;
+		exit;
 	}
 
 	echo json_encode([
@@ -229,7 +169,7 @@ function register($conn) {
 		echo json_encode([
 			"message" => "Utilisateur déjà existant"
 		]);
-		return;
+		exit;
 	}
 	createUser($conn);
 }
