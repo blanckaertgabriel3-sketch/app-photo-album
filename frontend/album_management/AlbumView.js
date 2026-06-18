@@ -26,10 +26,9 @@ export default class AlbumView {
 		this.create_btn = document.getElementById("create_btn");
 		this.msg_box = document.getElementById("msg_box");
 
-		this.newA;
 	}
 	createImgElement(srcValue) {
-		this.newA = document.createElement("a");
+		const newA = document.createElement("a");
 		const newImg = document.createElement("img");
 
 		const attributeClass = document.createAttribute("class");
@@ -44,9 +43,10 @@ export default class AlbumView {
 		newImg.setAttributeNode(attributeAlt);
 		newImg.setAttributeNode(attributeSrc);
 
-		this.photo_management.appendChild(this.newA);
-		this.newA.appendChild(newImg);
+		this.photo_management.appendChild(newA);
+		newA.appendChild(newImg);
 		
+		return newA;
 	}
 	removeImgElement() {
 		document.querySelectorAll(".result_image").forEach(img => img.remove());

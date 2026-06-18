@@ -47,15 +47,18 @@ export default class AlbumController {
 				}
 				for(let i = 0 ; i<this.result_photo_count ; i++) {
 					const imgSrc = search_result.photos_result[i].file_directory;
-					this.view.createImgElement(imgSrc);
-					this.view.newA.addEventListener("click", () => {
+					const photo_element = this.view.createImgElement(imgSrc);
+					photo_element.addEventListener("click", () => {
 						const photo = search_result.photos_result[i];
-
+						if (this.album_photos.some(p => p.id === photo.id)) {
+							this.view.msg_box.textContent = "Cette photo est déjà présente dans l'album";
+							return;
+						}
 						const { photoContainer, removeIcon } =
 							this.view.createAlbumPhotoElement(imgSrc);
 
 						this.album_photos.push(photo);
-
+						this.view.msg_box.textContent = "La photo a été ajoutée.";
 						removeIcon.addEventListener("click", () => {
 							photoContainer.remove();
 
