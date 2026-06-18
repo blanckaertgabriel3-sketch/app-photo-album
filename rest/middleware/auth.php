@@ -7,7 +7,7 @@ function requireAuth(): int
 
 		echo json_encode([
 			"success" => false,
-			"message" => "Unauthorized"
+			"message" => "Non connecté"
 		]);
 
 		exit;
@@ -15,23 +15,3 @@ function requireAuth(): int
 
 	return (int) $_SESSION["user_id"];
 }
-
-// if (!isset($_SESSION["user_id"])) {
-// 	echo json_encode([
-// 		"success" => false,
-// 		"message" => "Utilisateur non connecté"
-// 	]);
-// 	exit;
-// }
-// $query = "SELECT id FROM users WHERE id = :id";
-// $stmt = $conn->prepare($query);
-// $stmt->bindParam(":id", $_SESSION["user_id"]);
-// $stmt->execute();
-// if (!$stmt->fetch()) {
-// 	session_destroy();
-// 	echo json_encode([
-// 		"success" => false,
-// 		"message" => "Utilisateur non connecté"
-// 	]);
-// 	exit;
-// }

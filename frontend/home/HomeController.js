@@ -51,7 +51,10 @@ export default class HomeController {
 					credentials: "include"
 				}
 			);
-
+			if (response.status === 401) {
+				window.location.href = "../form/form.html";
+				return;
+			}
 			if (!response.ok) {
 				throw new Error("Erreur HTTP");
 			}

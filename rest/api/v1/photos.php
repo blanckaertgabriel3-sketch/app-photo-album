@@ -32,7 +32,7 @@ switch ($method) {
 
 function create_photo($conn) {
 	
-	$user_id = requireAuth();;
+	$user_id = requireAuth();
 
 	$data = json_decode(file_get_contents("php://input"),true);
 	if(!$data) {
@@ -138,6 +138,23 @@ function upload ($conn) {
 		echo json_encode([
 			"success" => false,
 			"message" => "La taille de fichier autorisé est de " . $allowed_size . " octets"
+		]);
+		exit;
+	}
+	$allowed_types = [
+		"image/jpeg",
+		"image/png",
+		"image/webp",
+		"image/gif"
+	];
+
+	$finfo = new finfo(FILEINFO_MIME_TYPE);
+	$mime_type = $finfo->file($file["tmp_name"]);
+
+	if (!in_array($mime_type, $allowed_types, true)) {
+		echo json_encode([
+			"success" => false,
+			"message" => "Type de fichier interdit"
 		]);
 		exit;
 	}

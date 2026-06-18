@@ -117,6 +117,7 @@ export default class AlbumController {
 		this.view.create_btn.addEventListener("click", async () => {
 			const creation_date = new Date().toISOString().slice(0, 19).replace("T", " ");
 			try {
+				
 				//create_album
 				const create_response = await fetch("http://localhost:8000/rest/api/v1/albums.php?action=create_album", {
 					method: "POST",
@@ -128,7 +129,7 @@ export default class AlbumController {
 						restriction: this.restriction
 					})
 				});
-				if (create_response.status === 401) {
+				if(create_response.status === 401) {
 					window.location.href = "../form/form.html";
 					return;
 				}
