@@ -58,6 +58,8 @@ function photos_albums($conn) {
 		]);
 		exit;
 	}
+	
+
 	$query = "INSERT INTO photos_albums (photo_id, album_id, display_order) VALUES (:photo_id, :album_id, :display_order)";
 	$stmt = $conn->prepare($query);
 	$stmt->bindParam(":photo_id", $photo_id);
@@ -71,8 +73,13 @@ function photos_albums($conn) {
 		exit;
 	}
 	echo json_encode([
+		"success" => true,
 		"message" => "Les photos ont été ajoutée"
 	]);
+	// echo json_encode([
+	// 	"success" => true,
+	// 	"message" => "TEST"
+	// ]);
 }
 function get_photos_albums($conn) {
 

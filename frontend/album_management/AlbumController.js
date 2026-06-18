@@ -49,9 +49,23 @@ export default class AlbumController {
 					const imgSrc = search_result.photos_result[i].file_directory;
 					this.view.createImgElement(imgSrc);
 					this.view.newA.addEventListener("click", () => {
-						this.view.createAlbumPhotoElement(imgSrc);
-						this.album_photos.push(search_result.photos_result[i]);
-					})
+						const photo = search_result.photos_result[i];
+
+						const { photoContainer, removeIcon } =
+							this.view.createAlbumPhotoElement(imgSrc);
+
+						this.album_photos.push(photo);
+
+						removeIcon.addEventListener("click", () => {
+							photoContainer.remove();
+
+							const index = this.album_photos.indexOf(photo);
+
+							if (index !== -1) {
+								this.album_photos.splice(index, 1);
+							}
+						});
+					});
 				}
 
 			} catch (error) {
@@ -152,6 +166,10 @@ export default class AlbumController {
 					console.log("Aucune photo dans l'album");
 				}
 				this.album_photos.forEach(async (photos, index) => {
+					console.log("photo_id", photos.id);
+					console.log("album_id", create_result.album_id,);
+					console.log("index", index);
+
 					const photos_album_response = await fetch("http://localhost:8000/rest/api/v1/photos_albums.php?action=photos_albums", {
 						method: "POST",
 						body: JSON.stringify({
@@ -167,10 +185,24 @@ export default class AlbumController {
 					if(!photos_album_response.ok) {
 						this.view.msg_box.textContent = "Erreur HTTP";
 						return;
-					}   
+					} 
 					const photos_album_result = await photos_album_response.json();
 					this.view.msg_box.textContent = photos_album_result.message;
+					if(!photos_album_result.success) {
+						return;
+					}
 				})
+				// -------------------- -------------------- -------------------- -------------------- --------------------
+				// -------------------- -------------------- -------------------- -------------------- --------------------
+				// -------------------- -------------------- -------------------- -------------------- --------------------
+				// -------------------- -------------------- -------------------- -------------------- --------------------
+				// -------------------- -------------------- -------------------- -------------------- --------------------
+				return;
+				// -------------------- -------------------- -------------------- -------------------- --------------------
+				// -------------------- -------------------- -------------------- -------------------- --------------------
+				// -------------------- -------------------- -------------------- -------------------- --------------------
+				// -------------------- -------------------- -------------------- -------------------- --------------------
+				// -------------------- -------------------- -------------------- -------------------- --------------------
 
 				// create hashtag
 				if(this.album_hashtags.length <= 0) {

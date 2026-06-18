@@ -46,6 +46,7 @@ export default class AlbumView {
 
 		this.photo_management.appendChild(this.newA);
 		this.newA.appendChild(newImg);
+		
 	}
 	removeImgElement() {
 		document.querySelectorAll(".result_image").forEach(img => img.remove());
@@ -53,7 +54,6 @@ export default class AlbumView {
 	}
 	createAlbumPhotoElement(imgSrc) {
 		const photoContainer = document.createElement("div");
-		const orderIcon = document.createElement("i");
 		const photoImg = document.createElement("img");
 		const removeIcon = document.createElement("i");
 
@@ -62,10 +62,6 @@ export default class AlbumView {
 		const photoDescription = document.createElement("p");
 
 		const photoTagsContainer = document.createElement("div");
-
-		orderIcon.classList.add("album_photo_order");
-		orderIcon.classList.add("fa-solid");
-		orderIcon.classList.add("fa-equals");
 
 		photoImg.classList.add("album_photo_image");
 		photoImg.src = imgSrc;
@@ -90,7 +86,6 @@ export default class AlbumView {
 		photoInfoContainer.appendChild(photoTitle);
 		photoInfoContainer.appendChild(photoDescription);
 
-		photoContainer.appendChild(orderIcon);
 		photoContainer.appendChild(photoImg);
 		photoContainer.appendChild(removeIcon);
 		photoContainer.appendChild(photoInfoContainer);
@@ -98,7 +93,7 @@ export default class AlbumView {
 
 		this.selected_photos.appendChild(photoContainer);
 
-		return photoContainer;
+		return { photoContainer, removeIcon };
 	}
 	createHashtagElement(hashtag) {
 		const newLi = document.createElement("li");
