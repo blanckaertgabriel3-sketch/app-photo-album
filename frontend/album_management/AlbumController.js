@@ -117,10 +117,8 @@ export default class AlbumController {
 								this.view.removeCollaboratorsElement(username);
 								collaborator_index = this.collaborators.indexOf(username);
 								this.collaborators.splice(collaborator_index, 1);
-								console.log("collaborators array : ", this.collaborators);
 							})
 							this.collaborators.push(username);
-							console.log("collaborators array : ", this.collaborators);
 						}
 					});
 				});
@@ -169,9 +167,6 @@ export default class AlbumController {
 					console.log("Aucune photo dans l'album");
 				}
 				this.album_photos.forEach(async (photos, index) => {
-					console.log("photo_id", photos.id);
-					console.log("album_id", create_result.album_id,);
-					console.log("index", index);
 
 					const photos_album_response = await fetch("http://localhost:8000/rest/api/v1/photos_albums.php?action=photos_albums", {
 						method: "POST",
@@ -195,17 +190,6 @@ export default class AlbumController {
 						return;
 					}
 				})
-				// -------------------- -------------------- -------------------- -------------------- --------------------
-				// -------------------- -------------------- -------------------- -------------------- --------------------
-				// -------------------- -------------------- -------------------- -------------------- --------------------
-				// -------------------- -------------------- -------------------- -------------------- --------------------
-				// -------------------- -------------------- -------------------- -------------------- --------------------
-				return;
-				// -------------------- -------------------- -------------------- -------------------- --------------------
-				// -------------------- -------------------- -------------------- -------------------- --------------------
-				// -------------------- -------------------- -------------------- -------------------- --------------------
-				// -------------------- -------------------- -------------------- -------------------- --------------------
-				// -------------------- -------------------- -------------------- -------------------- --------------------
 
 				// create hashtag
 				if(this.album_hashtags.length <= 0) {
@@ -256,8 +240,7 @@ export default class AlbumController {
 					}
 					this.view.msg_box.textContent = "Tous les hashtags ont été créée";				
 				});
-				console.log("Album Créée");
-				console.log("----------------------------------------------");
+				console.log("Création de l'album réussie.");
 			} catch (error) {
 				this.view.msg_box.textContent = "Erreur serveur";
 				console.error(error);

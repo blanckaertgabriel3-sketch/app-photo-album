@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Supprimer un album</title>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+	<link rel="stylesheet" href="../common.css">
+</head>
+<body>
+	<header>
+		<h1>Supprimer un album</h1>
+		<ul id="menu">
+			<li><a href="../home/home.html"><i class="fa-solid fa-house"></i></a></li>
+			<li><a href="../album_photo_management/album_photo_management.html"><i class="fa-solid fa-circle-plus"></i></a></li>
+			<li><a href="#"><i class="fa-solid fa-user"></i></a></li>
+			<li><a href="#"><i class="fa-solid fa-user-group"></i></a></li>
+			<li><a href="#" id="logout_btn"><i class="fa-solid fa-right-from-bracket"></i></a></li>
+		</ul>
+	</header>
+	<main>
+		<div id="album_search_section">
+			<h2>Rechercher l'album à supprimer</h2>
+			<label for="search_album_input">Titre de l'album :
+				<input id="search_album_input" type="search" placeholder="Recherche album">
+			</label>
+			<ul id="album_search_result"></ul>
+		</div>
+
+		<div id="album_confirm_section" style="display:none;">
+			<h2>Confirmer la suppression</h2>
+			<p>Voulez-vous vraiment supprimer l'album <strong id="album_title_confirm"></strong> ?</p>
+			<p><em>Cette action supprimera également toutes les associations de photos, hashtags et collaborateurs liés à cet album.</em></p>
+			<button id="confirm_delete_btn">Supprimer</button>
+			<button id="cancel_btn">Annuler</button>
+		</div>
+
+		<div id="msg_box"></div>
+	</main>
+
+	<script src="../logout.js"></script>
+	<script type="module" src="./album_delete.js"></script>
+</body>
+</html>

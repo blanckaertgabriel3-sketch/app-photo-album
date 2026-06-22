@@ -27,7 +27,7 @@ switch ($method) {
 }
 function create_hashtag($conn) {
 	
-	requireAuth();
+	requireAuth($conn);
 	
 	// get hashtag if exist
 	$data = json_decode(file_get_contents("php://input"), true);
@@ -85,7 +85,7 @@ function create_hashtag($conn) {
 }
 function get_hashtag($conn) {
 	
-	requireAuth();
+	requireAuth($conn);
 
 	$data = json_decode(file_get_contents("php://input"), true);
 	if(!$data) {

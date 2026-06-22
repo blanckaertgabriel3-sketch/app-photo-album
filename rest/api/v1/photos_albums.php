@@ -18,6 +18,9 @@ switch ($method) {
 		elseif($_GET["action"] === "get_photos_albums") {
 			get_photos_albums($conn);
 		}
+		elseif($_GET["action"] === "sync_photos_albums") {
+			sync_photos_albums($conn);
+		}
 		break;
 	
 	default:
@@ -28,7 +31,7 @@ switch ($method) {
 }
 function photos_albums($conn) {
 
-	requireAuth();
+	requireAuth($conn);
 
 	$data = json_decode(file_get_contents("php://input"), true);
 	if(!$data) {
@@ -76,14 +79,10 @@ function photos_albums($conn) {
 		"success" => true,
 		"message" => "Les photos ont été ajoutée"
 	]);
-	// echo json_encode([
-	// 	"success" => true,
-	// 	"message" => "TEST"
-	// ]);
 }
 function get_photos_albums($conn) {
 
-	requireAuth();
+	requireAuth($conn);
 
 	$data = json_decode(file_get_contents("php://input"),true);
 	if(!$data) {
@@ -101,7 +100,7 @@ function get_photos_albums($conn) {
 		]);
 		exit;
 	}
-	$query = "SELECT * FROM photos_albums WHERE album_id=:album_id";
+	$query = "SELECT * FROM photos_albums pa JOIN photos p ON p.id = pa.photo_id WHERE pa.album_id=:album_id";
 	$stmt = $conn->prepare($query);
 	$stmt->bindParam(":album_id", $album_id);
 	$success = $stmt->execute();
@@ -117,4 +116,64 @@ function get_photos_albums($conn) {
 		"message" => "Composition de l'album trouvé",
 		"photos_albums" => $photos_albums
 	]);
+}
+function sync_photos_albums($conn) {
+
+	requireAuth($conn);
+
+	$data = json_decode(file_get_contents("php://input"), true);
+
+	$album_id = $data["album_id"] ?? null;
+	$photos = $data["photos"] ?? [];
+
+	if(!$album_id) {
+		echo json_encode([
+			"success" => false,
+			"message" => "album_id manquant"
+		]);
+		exit;
+	}
+
+	try {
+
+		$conn->beginTransaction();
+
+		// Supprime les anciennes associations.
+		$stmt = $conn->prepare("DELETE FROM photos_albums WHERE album_id=:album_id");
+		$stmt->bindParam(":album_id", $album_id);
+		$stmt->execute();
+
+		// Ajoute les nouvelles associations.
+		foreach($photos as $entry) {
+
+			$photo_id = $entry["photo_id"] ?? null;
+			$display_order = $entry["display_order"] ?? 0;
+
+			if(!$photo_id) {
+				continue;
+			}
+
+			$stmt = $conn->prepare("INSERT INTO photos_albums (photo_id, album_id, display_order) VALUES (:photo_id, :album_id, :display_order)");
+			$stmt->bindParam(":photo_id", $photo_id);
+			$stmt->bindParam(":album_id", $album_id);
+			$stmt->bindParam(":display_order", $display_order);
+			$stmt->execute();
+		}
+
+		$conn->commit();
+
+		echo json_encode([
+			"success" => true,
+			"message" => "Photos de l'album synchronisées"
+		]);
+
+	} catch(Exception $e) {
+
+		$conn->rollBack();
+
+		echo json_encode([
+			"success" => false,
+			"message" => "Échec de la synchronisation des photos"
+		]);
+	}
 }

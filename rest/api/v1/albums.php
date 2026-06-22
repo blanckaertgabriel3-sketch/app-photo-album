@@ -21,6 +21,18 @@ switch ($method) {
 		elseif($_GET["action"] === "get_album_full") {
 			get_album_full($conn);
 		}
+		elseif($_GET["action"] === "search_album") {
+			search_album($conn);
+		}
+		elseif($_GET["action"] === "update_album") {
+			update_album($conn);
+		}
+		elseif($_GET["action"] === "delete_album") {
+			delete_album($conn);
+		}
+		elseif($_GET["action"] === "get_album_hashtags") {
+			get_album_hashtags($conn);
+		}
 		break;
 	
 	default:
@@ -32,7 +44,7 @@ switch ($method) {
 
 function create_album($conn) {
 	
-	$owner_id = requireAuth();;
+	$owner_id = requireAuth($conn);;
 
 
 	$data = json_decode(file_get_contents("php://input"), true);
@@ -123,7 +135,7 @@ function create_album($conn) {
 }
 function get_albums($conn) {
 	
-	requireAuth();
+	requireAuth($conn);
 
 	$query = "SELECT * FROM albums WHERE restriction = 'public' ORDER BY creation_date DESC";
 	$stmt = $conn->prepare($query);
@@ -143,7 +155,7 @@ function get_albums($conn) {
 	], JSON_PRETTY_PRINT);
 }
 function get_album_full($conn) {
-	requireAuth();
+	requireAuth($conn);
 
 	// get albums order by date
 	$query = "SELECT * FROM albums WHERE restriction = 'public' ORDER BY creation_date DESC";
@@ -161,7 +173,7 @@ function get_album_full($conn) {
 	if(empty($rows_albums)) {
 		echo json_encode([
 			"success" => false,
-			"message" => "Aucun album public en votre possession."
+			"message" => "Aucun album public existant."
 		]);
 		exit;
 	}
@@ -254,4 +266,249 @@ function get_album_full($conn) {
 		"rows_albums_hashtags" => $rows_albums_hashtags,
 		"rows_photos_hashtags" => $rows_photos_hashtags
 	], JSON_PRETTY_PRINT);
+}
+function search_album($conn) {
+
+	requireAuth($conn);
+
+	$data = json_decode(file_get_contents("php://input"), true);
+	$letters = $data["letters"] ?? "";
+
+	if($letters === "") {
+		echo json_encode([
+			"success" => false,
+			"message" => "Veuillez entrer une lettre"
+		]);
+		exit;
+	}
+
+	$search = "%" . $letters . "%";
+
+	$query = "SELECT * FROM albums WHERE title LIKE :search ORDER BY creation_date DESC";
+	$stmt = $conn->prepare($query);
+	$stmt->bindParam(":search", $search);
+
+	if(!$stmt->execute()) {
+		echo json_encode([
+			"success" => false,
+			"message" => "Échec de la recherche"
+		]);
+		exit;
+	}
+
+	$albums = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+	if(empty($albums)) {
+		echo json_encode([
+			"success" => false,
+			"message" => "Aucun album trouvé"
+		]);
+		exit;
+	}
+
+	echo json_encode([
+		"success" => true,
+		"message" => "Albums trouvés",
+		"albums_result" => $albums
+	]);
+}
+
+function update_album($conn) {
+
+	$owner_id = requireAuth($conn);
+
+	$data = json_decode(file_get_contents("php://input"), true);
+	if(!$data) {
+		echo json_encode([
+			"success" => false,
+			"message" => "JSON invalide pour modifier l'album"
+		]);
+		exit;
+	}
+
+	$album_id = $data["album_id"] ?? null;
+	$title = trim($data["title"] ?? "");
+	$description = trim($data["description"] ?? "");
+	$messages_allowed = $data["messages_allowed"] ?? null;
+	$restriction = $data["restriction"] ?? null;
+
+	if(!$album_id) {
+		echo json_encode([
+			"success" => false,
+			"message" => "album_id manquant"
+		]);
+		exit;
+	}
+
+	if($title === "") {
+		echo json_encode([
+			"success" => false,
+			"message" => "Titre manquant"
+		]);
+		exit;
+	}
+
+	if(!isset($messages_allowed)) {
+		echo json_encode([
+			"success" => false,
+			"message" => "messages_allowed manquant"
+		]);
+		exit;
+	}
+
+	if(!isset($restriction)) {
+		echo json_encode([
+			"success" => false,
+			"message" => "restriction manquante"
+		]);
+		exit;
+	}
+
+	// Vérifie que l'album appartient à l'utilisateur.
+	$stmt = $conn->prepare("SELECT owner_id FROM albums WHERE id=:album_id");
+	$stmt->bindParam(":album_id", $album_id);
+	$stmt->execute();
+
+	$album = $stmt->fetch(PDO::FETCH_ASSOC);
+
+	if(!$album) {
+		echo json_encode([
+			"success" => false,
+			"message" => "Album introuvable"
+		]);
+		exit;
+	}
+
+	if($album["owner_id"] != $owner_id) {
+		echo json_encode([
+			"success" => false,
+			"message" => "Non autorisé"
+		]);
+		exit;
+	}
+
+	// Vérifie que le titre n'est pas déjà utilisé.
+	$stmt = $conn->prepare("SELECT id FROM albums WHERE title=:title AND id != :album_id");
+	$stmt->bindParam(":title", $title);
+	$stmt->bindParam(":album_id", $album_id);
+	$stmt->execute();
+
+	if($stmt->fetch()) {
+		echo json_encode([
+			"success" => false,
+			"message" => "Ce titre est déjà utilisé"
+		]);
+		exit;
+	}
+
+	$query = "UPDATE albums SET title=:title, description=:description, messages_allowed=:messages_allowed, restriction=:restriction WHERE id=:album_id";
+	$stmt = $conn->prepare($query);
+	$stmt->bindParam(":title", $title);
+	$stmt->bindParam(":description", $description);
+	$stmt->bindParam(":messages_allowed", $messages_allowed);
+	$stmt->bindParam(":restriction", $restriction);
+	$stmt->bindParam(":album_id", $album_id);
+
+	if(!$stmt->execute()) {
+		echo json_encode([
+			"success" => false,
+			"message" => "Échec de la modification"
+		]);
+		exit;
+	}
+
+	echo json_encode([
+		"success" => true,
+		"message" => "Album modifié"
+	]);
+}
+
+function delete_album($conn) {
+
+	$owner_id = requireAuth($conn);
+
+	$data = json_decode(file_get_contents("php://input"), true);
+	$album_id = $data["album_id"] ?? null;
+
+	if(!$album_id) {
+		echo json_encode([
+			"success" => false,
+			"message" => "album_id manquant"
+		]);
+		exit;
+	}
+
+	// Vérifie que l'album appartient à l'utilisateur.
+	$stmt = $conn->prepare("SELECT owner_id FROM albums WHERE id=:album_id");
+	$stmt->bindParam(":album_id", $album_id);
+	$stmt->execute();
+
+	$album = $stmt->fetch(PDO::FETCH_ASSOC);
+
+	if(!$album) {
+		echo json_encode([
+			"success" => false,
+			"message" => "Album introuvable"
+		]);
+		exit;
+	}
+
+	if($album["owner_id"] != $owner_id) {
+		echo json_encode([
+			"success" => false,
+			"message" => "Non autorisé"
+		]);
+		exit;
+	}
+
+	// ON DELETE CASCADE supprime automatiquement les relations.
+	$stmt = $conn->prepare("DELETE FROM albums WHERE id=:album_id");
+	$stmt->bindParam(":album_id", $album_id);
+
+	if(!$stmt->execute()) {
+		echo json_encode([
+			"success" => false,
+			"message" => "Échec de la suppression"
+		]);
+		exit;
+	}
+
+	echo json_encode([
+		"success" => true,
+		"message" => "Album supprimé"
+	]);
+}
+
+function get_album_hashtags($conn) {
+
+	requireAuth($conn);
+
+	$data = json_decode(file_get_contents("php://input"), true);
+	$album_id = $data["album_id"] ?? null;
+
+	if(!$album_id) {
+		echo json_encode([
+			"success" => false,
+			"message" => "album_id manquant"
+		]);
+		exit;
+	}
+
+	$query = "SELECT hashtags.id, hashtags.name FROM albums_hashtags INNER JOIN hashtags ON albums_hashtags.hashtag_id = hashtags.id WHERE albums_hashtags.album_id = :album_id";
+	$stmt = $conn->prepare($query);
+	$stmt->bindParam(":album_id", $album_id);
+
+	if(!$stmt->execute()) {
+		echo json_encode([
+			"success" => false,
+			"message" => "Échec récupération hashtags"
+		]);
+		exit;
+	}
+
+	echo json_encode([
+		"success" => true,
+		"message" => "Hashtags trouvés",
+		"hashtags" => $stmt->fetchAll(PDO::FETCH_ASSOC)
+	]);
 }

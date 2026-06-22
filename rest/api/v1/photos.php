@@ -23,6 +23,15 @@ switch ($method) {
 		elseif($_GET["action"] === "get_photo") {
 			get_photo($conn);
 		}
+		elseif($_GET["action"] === "update_photo") {
+			update_photo($conn);
+		}
+		elseif($_GET["action"] === "delete_photo") {
+			delete_photo($conn);
+		}
+		elseif($_GET["action"] === "get_photo_hashtags") {
+			get_photo_hashtags($conn);
+		}
 		break;
 	
 	default:
@@ -32,7 +41,7 @@ switch ($method) {
 
 function create_photo($conn) {
 	
-	$user_id = requireAuth();
+	$user_id = requireAuth($conn);
 
 	$data = json_decode(file_get_contents("php://input"),true);
 	if(!$data) {
@@ -116,7 +125,7 @@ function create_photo($conn) {
 }
 function upload ($conn) {
 	
-	requireAuth();
+	requireAuth($conn);
 
 	$allowed_size = 500000;
 	$file = $_FILES['file'];
@@ -179,7 +188,7 @@ function upload ($conn) {
 	}
 }
 function search_photo($conn) {
-	requireAuth();
+	requireAuth($conn);
 	
 	$data = json_decode(file_get_contents("php://input"), true);
 	$letters = $data["letters"];
@@ -224,7 +233,7 @@ function search_photo($conn) {
 	], JSON_PRETTY_PRINT);
 }
 function get_photo($conn) {
-	requireAuth();
+	requireAuth($conn);
 	
 	$data = json_decode(file_get_contents("php://input"), true);
 	if(!$data) {
@@ -258,5 +267,196 @@ function get_photo($conn) {
 		"success" => true,
 		"message" => "Photo trouvée",
 		"photo" => $photo
+	]);
+}
+function update_photo($conn) {
+
+	$user_id = requireAuth($conn);
+
+	$data = json_decode(file_get_contents("php://input"), true);
+	if(!$data) {
+		echo json_encode([
+			"success" => false,
+			"message" => "JSON invalide pour modifier la photo"
+		]);
+		exit;
+	}
+
+	$photo_id = $data["photo_id"] ?? null;
+	$title = trim($data["title"] ?? "");
+	$description = trim($data["description"] ?? "");
+	$messages_allowed = $data["messages_allowed"] ?? null;
+	$restriction = $data["restriction"] ?? null;
+
+	if(!$photo_id) {
+		echo json_encode([
+			"success" => false,
+			"message" => "photo_id manquant"
+		]);
+		exit;
+	}
+
+	if($title === "") {
+		echo json_encode([
+			"success" => false,
+			"message" => "Titre manquant"
+		]);
+		exit;
+	}
+
+	if(!isset($restriction)) {
+		echo json_encode([
+			"success" => false,
+			"message" => "restriction manquante"
+		]);
+		exit;
+	}
+
+	// Vérifie que la photo appartient à l'utilisateur.
+	$stmt = $conn->prepare("SELECT user_id FROM photos WHERE id=:photo_id");
+	$stmt->bindParam(":photo_id", $photo_id);
+	$stmt->execute();
+
+	$photo = $stmt->fetch(PDO::FETCH_ASSOC);
+
+	if(!$photo) {
+		echo json_encode([
+			"success" => false,
+			"message" => "Photo introuvable"
+		]);
+		exit;
+	}
+
+	if($photo["user_id"] != $user_id) {
+		echo json_encode([
+			"success" => false,
+			"message" => "Non autorisé"
+		]);
+		exit;
+	}
+
+	// Vérifie que le titre n'est pas déjà utilisé.
+	$stmt = $conn->prepare("SELECT id FROM photos WHERE title=:title AND id != :photo_id");
+	$stmt->bindParam(":title", $title);
+	$stmt->bindParam(":photo_id", $photo_id);
+	$stmt->execute();
+
+	if($stmt->fetch()) {
+		echo json_encode([
+			"success" => false,
+			"message" => "Ce titre est déjà utilisé"
+		]);
+		exit;
+	}
+
+	$query = "UPDATE photos SET title=:title, description=:description, messages_allowed=:messages_allowed, restriction=:restriction WHERE id=:photo_id";
+	$stmt = $conn->prepare($query);
+	$stmt->bindParam(":title", $title);
+	$stmt->bindParam(":description", $description);
+	$stmt->bindParam(":messages_allowed", $messages_allowed);
+	$stmt->bindParam(":restriction", $restriction);
+	$stmt->bindParam(":photo_id", $photo_id);
+
+	if(!$stmt->execute()) {
+		echo json_encode([
+			"success" => false,
+			"message" => "Échec de la modification"
+		]);
+		exit;
+	}
+
+	echo json_encode([
+		"success" => true,
+		"message" => "Photo modifiée"
+	]);
+}
+
+function delete_photo($conn) {
+
+	$user_id = requireAuth($conn);
+
+	$data = json_decode(file_get_contents("php://input"), true);
+	$photo_id = $data["photo_id"] ?? null;
+
+	if(!$photo_id) {
+		echo json_encode([
+			"success" => false,
+			"message" => "photo_id manquant"
+		]);
+		exit;
+	}
+
+	// Vérifie que la photo appartient à l'utilisateur.
+	$stmt = $conn->prepare("SELECT user_id FROM photos WHERE id=:photo_id");
+	$stmt->bindParam(":photo_id", $photo_id);
+	$stmt->execute();
+
+	$photo = $stmt->fetch(PDO::FETCH_ASSOC);
+
+	if(!$photo) {
+		echo json_encode([
+			"success" => false,
+			"message" => "Photo introuvable"
+		]);
+		exit;
+	}
+
+	if($photo["user_id"] != $user_id) {
+		echo json_encode([
+			"success" => false,
+			"message" => "Non autorisé"
+		]);
+		exit;
+	}
+
+	// ON DELETE CASCADE supprime automatiquement les relations.
+	$stmt = $conn->prepare("DELETE FROM photos WHERE id=:photo_id");
+	$stmt->bindParam(":photo_id", $photo_id);
+
+	if(!$stmt->execute()) {
+		echo json_encode([
+			"success" => false,
+			"message" => "Échec de la suppression"
+		]);
+		exit;
+	}
+
+	echo json_encode([
+		"success" => true,
+		"message" => "Photo supprimée"
+	]);
+}
+
+function get_photo_hashtags($conn) {
+
+	requireAuth($conn);
+
+	$data = json_decode(file_get_contents("php://input"), true);
+	$photo_id = $data["photo_id"] ?? null;
+
+	if(!$photo_id) {
+		echo json_encode([
+			"success" => false,
+			"message" => "photo_id manquant"
+		]);
+		exit;
+	}
+
+	$query = "SELECT hashtags.id, hashtags.name FROM photos_hashtags INNER JOIN hashtags ON photos_hashtags.hashtag_id = hashtags.id WHERE photos_hashtags.photo_id = :photo_id";
+	$stmt = $conn->prepare($query);
+	$stmt->bindParam(":photo_id", $photo_id);
+
+	if(!$stmt->execute()) {
+		echo json_encode([
+			"success" => false,
+			"message" => "Échec récupération hashtags"
+		]);
+		exit;
+	}
+
+	echo json_encode([
+		"success" => true,
+		"message" => "Hashtags trouvés",
+		"hashtags" => $stmt->fetchAll(PDO::FETCH_ASSOC)
 	]);
 }

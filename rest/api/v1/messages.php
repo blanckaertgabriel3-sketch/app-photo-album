@@ -28,7 +28,7 @@ switch ($method) {
 }
 function create($conn) {
 	
-	requireAuth();
+	requireAuth($conn);
 	
 	$author_id =  $_SESSION["user_id"];
 	$data = json_decode(file_get_contents("php://input"), true);
@@ -81,7 +81,7 @@ function create($conn) {
 }
 function get_message($conn) {
 	
-	requireAuth();
+	requireAuth($conn);
 
 	$data = json_decode(file_get_contents("php://input"), true);
 	if(!$data) {

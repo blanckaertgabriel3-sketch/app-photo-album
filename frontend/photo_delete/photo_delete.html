@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Supprimer une photo</title>
+
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+	<link rel="stylesheet" href="../common.css">
+</head>
+
+<body>
+	<header>
+		<h1>Supprimer une photo</h1>
+
+		<ul id="menu">
+			<li><a href="../home/home.html"><i class="fa-solid fa-house"></i></a></li>
+			<li><a href="../album_photo_management/album_photo_management.html"><i class="fa-solid fa-circle-plus"></i></a></li>
+			<li><a href="#"><i class="fa-solid fa-user"></i></a></li>
+			<li><a href="#"><i class="fa-solid fa-user-group"></i></a></li>
+			<li><a href="#" id="logout_btn"><i class="fa-solid fa-right-from-bracket"></i></a></li>
+		</ul>
+	</header>
+
+	<main>
+		<div id="photo_search_section">
+			<h2>Rechercher la photo à supprimer</h2>
+
+			<label for="search_photo_input">Titre de la photo :
+				<input id="search_photo_input" type="search" placeholder="Recherche photo">
+			</label>
+
+			<div id="photo_search_result"></div>
+		</div>
+
+		<div id="photo_confirm_section" style="display:none;">
+			<h2>Confirmer la suppression</h2>
+
+			<img id="photo_preview" src="" alt="Aperçu" style="max-width:200px; display:block; margin-bottom:10px;">
+
+			<p>Voulez-vous vraiment supprimer la photo <strong id="photo_title_confirm"></strong> ?</p>
+
+			<p><em>Cette action supprimera également toutes les associations d'albums et hashtags liés à cette photo.</em></p>
+
+			<button id="confirm_delete_btn">Supprimer</button>
+			<button id="cancel_btn">Annuler</button>
+		</div>
+
+		<div id="msg_box"></div>
+	</main>
+
+	<script src="../logout.js"></script>
+	<script type="module" src="./photo_delete.js"></script>
+</body>
+
+</html>

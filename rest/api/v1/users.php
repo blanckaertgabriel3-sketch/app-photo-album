@@ -37,7 +37,7 @@ switch ($method) {
 }
 function search_users($conn) {
 	
-	requireAuth();
+	requireAuth($conn);
 	
 	$data = json_decode(file_get_contents("php://input"), true);
 	if(!$data) {
@@ -88,7 +88,7 @@ function search_users($conn) {
 	], JSON_PRETTY_PRINT);
 }
 function getUser($conn) {	
-	$user_id = requireAuth();
+	$user_id = requireAuth($conn);
 
 	$query = "SELECT * FROM users WHERE id=:user_id";
 	$stmt = $conn->prepare($query);
