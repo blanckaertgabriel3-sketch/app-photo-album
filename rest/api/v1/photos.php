@@ -188,7 +188,7 @@ function upload ($conn) {
 	}
 }
 function search_photo($conn) {
-	requireAuth($conn);
+	$user_id = requireAuth($conn);
 	
 	$data = json_decode(file_get_contents("php://input"), true);
 	$letters = $data["letters"];
@@ -206,10 +206,11 @@ function search_photo($conn) {
 		]);
 		exit;
 	}
-	$query = "SELECT * FROM photos WHERE title LIKE :search";
+	$query = "SELECT * FROM photos WHERE title LIKE :search AND user_id = :user_id";
 	$search = "%" . $letters . "%";
 	$stmt = $conn->prepare($query);
 	$stmt->bindParam(":search", $search);
+	$stmt->bindParam(":user_id", $user_id);
 	$success = $stmt->execute();
 	if(!$success) {
 		echo json_encode([

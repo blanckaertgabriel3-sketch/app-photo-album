@@ -269,7 +269,7 @@ function get_album_full($conn) {
 }
 function search_album($conn) {
 
-	requireAuth($conn);
+	$user_id = requireAuth($conn);
 
 	$data = json_decode(file_get_contents("php://input"), true);
 	$letters = $data["letters"] ?? "";
@@ -284,9 +284,10 @@ function search_album($conn) {
 
 	$search = "%" . $letters . "%";
 
-	$query = "SELECT * FROM albums WHERE title LIKE :search ORDER BY creation_date DESC";
+	$query = "SELECT * FROM albums WHERE title LIKE :search AND owner_id = :user_id ORDER BY creation_date DESC";
 	$stmt = $conn->prepare($query);
 	$stmt->bindParam(":search", $search);
+	$stmt->bindParam(":user_id", $user_id);
 
 	if(!$stmt->execute()) {
 		echo json_encode([

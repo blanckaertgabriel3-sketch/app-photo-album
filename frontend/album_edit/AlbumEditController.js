@@ -342,31 +342,25 @@ export default class AlbumEditController {
 			}
 
 			for (const name of this.album_hashtags) {
-				const hRes = await fetch("http://localhost:8000/rest/api/v1/hashtags.php?action=create_hashtag", {
+				await fetch("http://localhost:8000/rest/api/v1/hashtags.php?action=create_hashtag", {
 					method: "POST",
 					body: JSON.stringify({ name })
 				});
-
-				const hData = await hRes.json();
-
-				if (!hData.success) continue;
-
-				await fetch("http://localhost:8000/rest/api/v1/albums_hashtags.php?action=albums_hashtags", {
-					method: "POST",
-					body: JSON.stringify({
-						album_id,
-						hashtag_id: hData.hashtag_id
-					})
-				});
 			}
 
-			await fetch("http://localhost:8000/rest/api/v1/albums_hashtags.php?action=sync_albums_hashtags", {
+			const syncHashtagsRes = await fetch("http://localhost:8000/rest/api/v1/albums_hashtags.php?action=sync_albums_hashtags", {
 				method: "POST",
 				body: JSON.stringify({
 					album_id,
 					hashtag_names: this.album_hashtags
 				})
 			});
+
+			const syncHashtagsData = await syncHashtagsRes.json();
+			if (!syncHashtagsData.success) {
+				this.view.msg_box.textContent = syncHashtagsData.message;
+				return;
+			}
 
 			await fetch("http://localhost:8000/rest/api/v1/albums_collaborators.php?action=sync_collaborators", {
 				method: "POST",

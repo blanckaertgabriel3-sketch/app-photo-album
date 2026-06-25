@@ -115,6 +115,18 @@ function sync_albums_hashtags($conn) {
 
 			$stmt->execute($params);
 		}
+		// insérer les hashtags manquants
+		if (!empty($hashtag_names)) {
+			foreach ($hashtag_names as $name) {
+				$stmt = $conn->prepare("
+					INSERT IGNORE INTO albums_hashtags (album_id, hashtag_id)
+					SELECT :album_id, id FROM hashtags WHERE name = :name
+				");
+				$stmt->bindParam(":album_id", $album_id);
+				$stmt->bindParam(":name", $name);
+				$stmt->execute();
+			}
+		}
 
 		$conn->commit();
 
