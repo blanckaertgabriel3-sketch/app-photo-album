@@ -103,7 +103,14 @@ export default class HomeController {
 					album.description
 				);
 				post.addEventListener("click", () => {
-					console.log("click", album);
+					const photos_id = photosAlbums
+						.filter(row => row.album_id == album.id);
+					const file_directories_photos_album = photos
+						.filter(row => row.id = photos_id)
+						.map(row => row.file_directory);
+
+					console.log("file_directories_photos_album : ", file_directories_photos_album);
+
 				})
 			});
 		}
