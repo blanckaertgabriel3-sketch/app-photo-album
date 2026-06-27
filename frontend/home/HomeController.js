@@ -95,13 +95,16 @@ export default class HomeController {
 					.filter(row => row.album_id == album.id)
 					.map(row => row.hashtag_name);
 
-				this.view.createPostElement(
+				const post = this.view.createPostElement(
 					file_directory,
 					album.title,
 					album.creation_date,
 					hashtags,
 					album.description
 				);
+				post.addEventListener("click", () => {
+					console.log("click", album);
+				})
 			});
 		}
 		catch (error) {

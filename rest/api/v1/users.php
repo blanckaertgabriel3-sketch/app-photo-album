@@ -188,14 +188,25 @@ function updateUser($conn) {
 		}
 }
 function deleteUser($conn) {
-	$data = json_decode(file_get_contents("php://input"),true);
-	if(isset($data['id'])) {
-		$query = "DELETE FROM users WHERE id=:id";
-		$stmt = $conn->prepare($query);
-		$stmt->bindParam(':id',$data['id']);
-		$stmt->execute();
-		echo json_encode(["message"=>"Utilisateur supprimé"]);
-	} else {
-		echo json_encode(["message"=>"Données involide pour supprimer l'utilisateur"]);
+	$user_id = requireAuth($conn);
+	//remove albums
+	$stmt = $conn->prepare("DELETE FROM albums WHERE owner_id = ?");
+	$stmt->execute([$user_id]);
+	//remove photos
+	$stmt = $conn->prepare("DELETE FROM photos WHERE user_id = ?");
+	$stmt->execute([$user_id]);
+
+	// remove user
+	$query = "DELETE FROM users WHERE id=:user_id";
+	$stmt = $conn->prepare($query);
+	$stmt->bindParam(':user_id', $user_id);
+	$success = $stmt->execute();
+	if(!$success) {
+		echo json_encode(["message"=>"Echec de la suppression d'un utilisateur"]);
+		exit;
 	}
+	echo json_encode([
+		"message"=>"Utilisateur supprimé",
+		"success" => true
+	]);
 }

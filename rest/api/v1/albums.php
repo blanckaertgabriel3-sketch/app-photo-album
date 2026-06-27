@@ -392,14 +392,6 @@ function update_album($conn) {
 		exit;
 	}
 
-	if($album["owner_id"] != $owner_id) {
-		echo json_encode([
-			"success" => false,
-			"message" => "Non autorisé"
-		]);
-		exit;
-	}
-
 	// Vérifie que le titre n'est pas déjà utilisé.
 	$stmt = $conn->prepare("SELECT id FROM albums WHERE title=:title AND id != :album_id");
 	$stmt->bindParam(":title", $title);
@@ -462,14 +454,6 @@ function delete_album($conn) {
 		echo json_encode([
 			"success" => false,
 			"message" => "Album introuvable"
-		]);
-		exit;
-	}
-
-	if($album["owner_id"] != $owner_id) {
-		echo json_encode([
-			"success" => false,
-			"message" => "Non autorisé"
 		]);
 		exit;
 	}

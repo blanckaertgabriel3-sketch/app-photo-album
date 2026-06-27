@@ -328,14 +328,6 @@ function update_photo($conn) {
 		exit;
 	}
 
-	if($photo["user_id"] != $user_id) {
-		echo json_encode([
-			"success" => false,
-			"message" => "Non autorisé"
-		]);
-		exit;
-	}
-
 	// Vérifie que le titre n'est pas déjà utilisé.
 	$stmt = $conn->prepare("SELECT id FROM photos WHERE title=:title AND id != :photo_id");
 	$stmt->bindParam(":title", $title);
@@ -398,14 +390,6 @@ function delete_photo($conn) {
 		echo json_encode([
 			"success" => false,
 			"message" => "Photo introuvable"
-		]);
-		exit;
-	}
-
-	if($photo["user_id"] != $user_id) {
-		echo json_encode([
-			"success" => false,
-			"message" => "Non autorisé"
 		]);
 		exit;
 	}

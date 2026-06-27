@@ -9,7 +9,6 @@ function requireAuth(PDO $conn): int
             "success" => false,
             "message" => "Non connecté"
         ]);
-
         exit;
     }
 

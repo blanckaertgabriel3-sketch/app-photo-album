@@ -119,7 +119,9 @@ export default class HomeView {
 			interactionsUl.appendChild(li);
 		});
 
-		post.appendChild(img);
+		if (file_directory !== "") {
+			post.appendChild(img);
+		}
 		post.appendChild(infos);
 
 		if (hashtags && hashtags.length > 0) {
