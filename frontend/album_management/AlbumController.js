@@ -54,8 +54,7 @@ export default class AlbumController {
 							this.view.msg_box.textContent = "Cette photo est déjà présente dans l'album";
 							return;
 						}
-						const { photoContainer, removeIcon } =
-							this.view.createAlbumPhotoElement(imgSrc);
+						const { photoContainer, removeIcon } = this.view.createAlbumPhotoElement(imgSrc);
 
 						this.album_photos.push(photo);
 						this.view.msg_box.textContent = "La photo a été ajoutée.";
@@ -238,7 +237,34 @@ export default class AlbumController {
 					if(!albums_hashtags_result.success) {
 						return;
 					}
-					this.view.msg_box.textContent = "Tous les hashtags ont été créée";				
+					this.view.msg_box.textContent = "Tous les hashtags ont été créés";	
+				});
+				// add collaborators
+				if(this.collaborators.length <= 0) {
+					console.log("Aucun collaborateur dans l'album");
+				}
+				this.collaborators.forEach(async (collaborator) => {
+					const res_add_collaborator = await fetch ("http://localhost:8000/rest/api/v1/albums_collaborators.php?action=add_collaborator", {
+						method: "POST",
+						body: JSON.stringify({
+							username: collaborator,
+							album_id: create_result.album_id
+						})
+					});
+					if (res_add_collaborator.status === 401) {
+						window.location.href = "../form/form.html";
+						return;
+					}
+					if(!res_add_collaborator.ok) {
+						this.view.msg_box.textContent = "Erreur HTTP";
+						return;
+					}
+
+					const data_add_collaborator = await res_add_collaborator.json();
+					this.view.msg_box.textContent = data_add_collaborator.message;
+					if(!data_add_collaborator.success) {
+						return;
+					}
 				});
 				console.log("Création de l'album réussie.");
 			} catch (error) {

@@ -284,7 +284,19 @@ function search_album($conn) {
 
 	$search = "%" . $letters . "%";
 
-	$query = "SELECT * FROM albums WHERE title LIKE :search AND owner_id = :user_id ORDER BY creation_date DESC";
+	$query = "
+	SELECT DISTINCT a.*
+	FROM albums a
+	LEFT JOIN albums_collaborators ac
+		ON a.id = ac.album_id
+	WHERE
+		a.title LIKE :search
+		AND (
+			a.owner_id = :user_id
+			OR ac.user_id = :user_id
+		)
+	ORDER BY a.creation_date DESC
+	";
 	$stmt = $conn->prepare($query);
 	$stmt->bindParam(":search", $search);
 	$stmt->bindParam(":user_id", $user_id);
