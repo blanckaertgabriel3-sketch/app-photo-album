@@ -58,7 +58,6 @@ export default class AlbumView {
 		const removeIcon = document.createElement("i");
 
 		const photoInfoContainer = document.createElement("div");
-		const photoDescription = document.createElement("p");
 
 		const photoTagsContainer = document.createElement("div");
 
@@ -74,12 +73,7 @@ export default class AlbumView {
 
 		photoInfoContainer.classList.add("album_photo_info");
 
-		photoDescription.classList.add("album_photo_description");
-		photoDescription.textContent = "Description de la photo";
-
 		photoTagsContainer.classList.add("album_photo_tags");
-
-		photoInfoContainer.appendChild(photoDescription);
 
 		photoContainer.appendChild(photoImg);
 		photoContainer.appendChild(removeIcon);
