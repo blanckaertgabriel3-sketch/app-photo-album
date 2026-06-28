@@ -33,9 +33,3 @@ function requireAuth(PDO $conn): int
 
     return $user_id;
 }
-
-
-// function requireAuth(PDO $conn): int
-// {
-//     return 1;
-// }

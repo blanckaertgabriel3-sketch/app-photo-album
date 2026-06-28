@@ -273,28 +273,118 @@ img {
 }
 
 /* ── Modal ───────────────────────────────────────────────────── */
+/* ===== Modal ===== */
+
 #modal {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  align-items: center;
-  justify-content: center;
-  z-index: 100;
-  padding: var(--s2);
+    position: fixed;
+    inset: 0;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    padding: var(--s3);
+
+    background: rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(2px);
+
+    z-index: 1000;
 }
 
-#modal.open {
-  display: flex;
+.modal_content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s2);
+
+    width: min(100%, 900px);
+    max-height: 90vh;
+
+    padding: var(--s3);
+
+    background: var(--white);
+    border: 1px solid var(--gray-light);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+
+    overflow: hidden;
 }
 
-#modal > div {
-  background-color: var(--white);
-  border-radius: var(--radius);
-  padding: var(--s3);
-  max-width: 480px;
-  width: 100%;
-  box-shadow: var(--shadow);
+.modal_header {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.modal_header button {
+    min-width: 40px;
+    min-height: 40px;
+}
+
+/* ===== Galerie ===== */
+
+.gallery {
+    display: flex;
+    gap: var(--s2);
+
+    overflow-x: auto;
+    overflow-y: hidden;
+
+    padding-bottom: var(--s1);
+
+    scroll-behavior: smooth;
+}
+
+.gallery::-webkit-scrollbar {
+    height: 8px;
+}
+
+.gallery::-webkit-scrollbar-track {
+    background: var(--gray-light);
+    border-radius: var(--radius);
+}
+
+.gallery::-webkit-scrollbar-thumb {
+    background: var(--gray-mid);
+    border-radius: var(--radius);
+}
+
+.gallery::-webkit-scrollbar-thumb:hover {
+    background: var(--gray-dark);
+}
+
+/* ===== Images ===== */
+
+.gallery img {
+    flex: 0 0 auto;
+
+    width: 260px;
+    height: 180px;
+
+    object-fit: cover;
+
+    border: 1px solid var(--gray-light);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+
+    transition: transform .15s ease;
+}
+
+.gallery img:hover {
+    transform: scale(1.03);
+}
+
+/* ===== Mobile ===== */
+
+@media (max-width: 768px) {
+
+    .modal_content {
+        width: 100%;
+        max-height: 95vh;
+        padding: var(--s2);
+    }
+
+    .gallery img {
+        width: 220px;
+        height: 150px;
+    }
+
 }
 
 /* ── Grille ──────────────────────────────────────────────────── */
@@ -341,3 +431,4 @@ img {
   outline: 2px solid var(--black);
   outline-offset: 2px;
 }
+

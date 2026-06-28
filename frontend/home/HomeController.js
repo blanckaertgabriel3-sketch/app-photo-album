@@ -3,14 +3,10 @@ export default class HomeController {
 		this.view = view;
 		this.getUser();
 		this.generatePosts();
-		
-		// pop_up
-		this.view.open_pop_up.addEventListener("click", () => {
-			this.view.modal.style.display = "flex";
-		});
-
-		this.view.close_pop_up.addEventListener("click", () => {
-			this.view.modal.style.display = "none";
+		this.view.modal.addEventListener("click", (e) => {
+			if (e.target === this.view.modal) {
+				this.view.modal.style.display = "none";
+			}
 		});
 	}
 	async getUser() {
@@ -104,14 +100,16 @@ export default class HomeController {
 				);
 				post.addEventListener("click", () => {
 
-					const file_directories_photos_album = photosAlbums
-						.filter(pa => pa.album_id == album.id)
-						.map(pa => pa.photo_id)
-						.map(id => photos.find(p => p.id == id))
-						.filter(Boolean)
-						.map(p => p.file_directory);
+					const photos_id = photosAlbums
+						.filter(row => row.album_id == album.id)
+						.map(row => row.photo_id);
 
-					console.log(file_directories_photos_album);
+					const file_directories_photos_album = photos
+						.filter(photo => photos_id.includes(photo.id))
+						.map(photo => photo.file_directory);
+
+					this.view.showAlbumPhotos(file_directories_photos_album);
+
 				});
 			});
 		}

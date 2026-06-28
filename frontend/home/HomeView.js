@@ -4,14 +4,9 @@ export default class HomeView {
 		this.posts_container = document.getElementById("posts_container");
 		
 		// pop_up
-		this.open_pop_up = document.getElementById("open_pop_up");
-		this.close_pop_up = document.getElementById("close_pop_up");
 		this.modal = document.getElementById("modal");
 
 		this.msg_box = document.getElementById("msg_box");
-
-		// pop_up
-		this.modal.style.display = "none";
 
 	}
 	createPostElement(file_directory, title, import_date, hashtags, description) {
@@ -135,5 +130,35 @@ export default class HomeView {
 		this.posts_container.appendChild(post);
 
 		return post;
+	}
+	showAlbumPhotos(fileDirectories) {
+
+		this.modal.innerHTML = "";
+
+		const content = document.createElement("div");
+		content.classList.add("modal_content");
+
+		const closeBtn = document.createElement("button");
+		closeBtn.textContent = "X";
+
+		closeBtn.addEventListener("click", () => {
+			this.modal.style.display = "none";
+		});
+
+		const gallery = document.createElement("div");
+		gallery.classList.add("gallery");
+
+		fileDirectories.forEach(path => {
+			const img = document.createElement("img");
+			img.src = path;
+			gallery.appendChild(img);
+		});
+
+		content.appendChild(closeBtn);
+		content.appendChild(gallery);
+
+		this.modal.appendChild(content);
+
+		this.modal.style.display = "flex";
 	}
 }
