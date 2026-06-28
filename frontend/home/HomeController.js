@@ -103,15 +103,16 @@ export default class HomeController {
 					album.description
 				);
 				post.addEventListener("click", () => {
-					const photos_id = photosAlbums
-						.filter(row => row.album_id == album.id);
-					const file_directories_photos_album = photos
-						.filter(row => row.id = photos_id)
-						.map(row => row.file_directory);
 
-					console.log("file_directories_photos_album : ", file_directories_photos_album);
+					const file_directories_photos_album = photosAlbums
+						.filter(pa => pa.album_id == album.id)
+						.map(pa => pa.photo_id)
+						.map(id => photos.find(p => p.id == id))
+						.filter(Boolean)
+						.map(p => p.file_directory);
 
-				})
+					console.log(file_directories_photos_album);
+				});
 			});
 		}
 		catch (error) {
